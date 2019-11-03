@@ -117,12 +117,14 @@ function snakeMove(direction) {
     if (eatApple(snakeStep) != "nomnom" ) {
         snake[snake.length - 1].classList.remove("snake");
         snake.pop();
-    }
-
-    
-
+    }  
     createSnake(snake)
 }
+
+let autoMove = setTimeout(function step() {
+    snakeMove(crntDirection);
+    autoMove = setTimeout(step, 300);
+}, 300);
 
 createField(fieldSize);
 createSnake(snake)
