@@ -21,6 +21,11 @@ section {
     border: 1px solid green;
 }
 
+.apple {
+    border: none;
+    background: green;
+}
+
 .snake {
     border: none;
     background: red;
@@ -29,4 +34,19 @@ section {
 .snake__head {
     border: none;
     background: #000;
+}
+
+nav {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+#btnUp,
+#btnDown {
+    width: 100%;
+}
+
+#btnLeft,
+#btnRight {
+    width: 50%;
 }
