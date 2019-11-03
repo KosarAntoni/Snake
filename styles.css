@@ -30,3 +30,18 @@ section {
     border: none;
     background: #000;
 }
+
+nav {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+#btnUp,
+#btnDown {
+    width: 100%;
+}
+
+#btnLeft,
+#btnRight {
+    width: 50%;
+}

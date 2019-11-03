@@ -1,14 +1,17 @@
 let position = "0_0";
+
 let snakeStep;
+let fieldWidth = 8;
+let fieldHeight = 8;
 
 function createField() {
     let gameField = document.querySelector(".game__field");
     
-    for (let y = 0; y < 8; y++) {
+    for (let y = 0; y < fieldHeight; y++) {
 
         let tmpIdFirst = y + "_";
 
-        for (let x = 0; x < 8; x++) {
+        for (let x = 0; x < fieldWidth; x++) {
 
             let tmpId = tmpIdFirst + x;
 
@@ -23,8 +26,8 @@ function createField() {
 
 function snakeMove(snakeDirection) {
     if (snakeStep) clearTimeout(snakeStep);
-    let stepX = position.slice(-1);
-    let stepY = position.slice(0,1);
+    let stepX = snake[0].id.slice(-1);
+    let stepY = snake[0].id.slice(0,1);
 
     snakeStep = setTimeout(function move() {
             let direction = stepY + "_" + stepX;
@@ -48,34 +51,34 @@ function snakeMove(snakeDirection) {
                 };
             };
 
-            if (stepX > 7) {
+            if (stepX > fieldWidth - 1) {
                 stepX = 0; 
             };
             if (stepX < 0) {
-                stepX = 7; 
+                stepX = fieldWidth - 1; 
             };
-            if (stepY > 7) {
+            if (stepY > fieldHeight - 1) {
                 stepY = 0; 
             };
             if (stepY < 0) {
-                stepY = 7; 
+                stepY = fieldHeight - 1; 
             };
-
-            removeSquare(position);
-            position = direction;
+            removeSquare(snake[snake.length - 1].id);
+            // for(let i = 1; i < snake.length; i++) {
+            //     snake[i] = snake[]
+            // }
+            snake[snake.length - 1] = snake[1];
+            snake[1] = snake[0];
+            snake[0] = document.getElementById(direction);
             addSquare(direction);
-            snakeStep = setTimeout(move, 500);
+            snakeStep = setTimeout(move, 300);
         });
 }
 
 function createSnake(width) {
-    for (let w = 0; w < width; w++) {
-        let tmpBox = document.getElementById(`3_${w}`)
-        if (w == width - 1) {
-            tmpBox.classList.toggle("snake__head");
-        } else {
-            tmpBox.classList.toggle("snake");
-        }        
+    for (let bodyPart of width) {
+        console.log(bodyPart);
+        bodyPart.classList.toggle("snake");        
     };
 }
 
@@ -95,5 +98,13 @@ document.getElementById("btnLeft").addEventListener("click", () => snakeMove("le
 document.getElementById("btnRight").addEventListener("click", () => snakeMove("right") );
 
 createField();
+let snake = [
+    document.getElementById("3_2"),
+    document.getElementById("3_1"),
+    document.getElementById("3_0")
+];
+let [snakeHead, ...snakeBody] = snake;
+console.log(snake);
+createSnake(snake);
 
 
