@@ -1,12 +1,59 @@
 let snake = [];
+let autoMove;
+let endGame = false;
+let lastDirection;
 let crntDirection = "right";
 let fieldSize = 20;
+
+document.getElementById("btnUp").addEventListener("click", function() {
+    lastDirection = crntDirection;
+    crntDirection = "up";
+});
+document.getElementById("btnDown").addEventListener("click", function() {
+    lastDirection = crntDirection;
+    crntDirection = "down";
+});
+document.getElementById("btnLeft").addEventListener("click", function() {
+    lastDirection = crntDirection;
+    crntDirection = "left";
+});
+document.getElementById("btnRight").addEventListener("click", function() {
+    lastDirection = crntDirection;
+    crntDirection = "right";
+});
+document.getElementById("btnStop").addEventListener("click", function() {
+    clearTimeout(autoMove);
+});
+document.getElementById("btnStart").addEventListener("click", function() {
+    endGame = false;
+    createSnake();
+    clearTimeout(autoMove);
+    launchSnake();
+});
 
 function getRandom(min, max) {
     min = Math.ceil(min);
     max = Math.floor(max);
     return Math.floor(Math.random() * (max - min)) + min;
-  }
+}
+
+function launchSnake() {
+    return autoMove = setInterval(function step() {
+        snakeMove(crntDirection);
+    }, 300);
+}
+
+function eatItself(pos) {
+    if (pos.classList.contains("snake")) {  
+        clearInterval(autoMove);   
+        autoMove = null;  
+        for(let part of snake) {
+            part.classList.remove("snake");
+        }
+        endGame = true;
+        snake = [];
+    }    
+}
 
 function addApple() {
     let appleField = document.getElementById(`${getRandom(0, fieldSize)}_${getRandom(0, fieldSize)}`);
@@ -15,7 +62,6 @@ function addApple() {
 }
 
 function eatApple(pos) {
-    console.log(pos);
     if (pos.classList.contains("apple")) {
         pos.classList.remove("apple");
         addApple();
@@ -45,7 +91,11 @@ function createField(fieldSize) {
 
 function createSnake() {
     if (snake.length == 0) {
+        lastDirection = null;
+        crntDirection = "right";
         snake = [
+            document.getElementById("3_5"),
+            document.getElementById("3_4"),
             document.getElementById("3_3"),
             document.getElementById("3_2"),
             document.getElementById("3_1")
@@ -67,22 +117,27 @@ function posCheck(step) {
 }
 
 function checkDirection(direction) {
-    if (direction == "up" && crntDirection == "down") {
-        return crntDirection;
+    if (lastDirection == "up" && crntDirection == "down") {
+        return lastDirection;
     }
-    if (direction == "down" && crntDirection == "up") {
-        return crntDirection;
+    if (lastDirection == "down" && crntDirection == "up") {
+        return lastDirection;
     }
-    if (direction == "left" && crntDirection == "right") {
-        return crntDirection;
+    if (lastDirection == "left" && crntDirection == "right") {
+        return lastDirection;
     }
-    if (direction == "right" && crntDirection == "left") {
-        return crntDirection;
+    if (lastDirection == "right" && crntDirection == "left") {
+        return lastDirection;
     }
     return direction;
 }
 
 function snakeMove(direction) {
+    console.log("Hssss");
+    console.log(endGame);
+
+    if (snake.length == 0) createSnake();
+
     let crntHeadPos = snake[0].id.split("_");
     let posY = crntHeadPos[0];
     let posX = crntHeadPos[1];
@@ -112,25 +167,19 @@ function snakeMove(direction) {
             break;
         }
     }
+    eatItself(snakeStep);
+    
+    if (endGame == true) return;
 
-    snake.unshift(snakeStep);
     if (eatApple(snakeStep) != "nomnom" ) {
         snake[snake.length - 1].classList.remove("snake");
         snake.pop();
     }  
-    createSnake(snake)
+
+    snake.unshift(snakeStep);
+
+    if (!endGame) createSnake()
 }
 
-let autoMove = setTimeout(function step() {
-    snakeMove(crntDirection);
-    autoMove = setTimeout(step, 300);
-}, 300);
-
 createField(fieldSize);
-createSnake(snake)
 addApple()
-
-document.getElementById("btnUp").addEventListener("click", () => snakeMove("up") );
-document.getElementById("btnDown").addEventListener("click", () => snakeMove("down") );
-document.getElementById("btnLeft").addEventListener("click", () => snakeMove("left") );
-document.getElementById("btnRight").addEventListener("click", () => snakeMove("right") );

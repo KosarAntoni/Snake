@@ -47,6 +47,8 @@ nav {
 }
 
 #btnLeft,
-#btnRight {
+#btnRight,
+#btnStart,
+#btnStop {
     width: 50%;
 }
