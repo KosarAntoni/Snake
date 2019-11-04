@@ -1,6 +1,7 @@
 let snake = [];
 let autoMove;
 let endGame = false;
+let tmpDirection = "right";
 let crntDirection = "right";
 let fieldSize = 20;
 
@@ -8,25 +9,25 @@ document.addEventListener("keydown", function(event) {
     switch(event.code) {
         case "ArrowUp" : {
             if (crntDirection != "down") {
-                crntDirection = "up";
+                tmpDirection = "up";
             }
             break;
         };
         case "ArrowDown" : {
             if (crntDirection != "up") {
-                crntDirection = "down";
+                tmpDirection = "down";
             }
             break;
         };
         case "ArrowLeft" : {
             if (crntDirection != "right") {
-                crntDirection = "left";
+                tmpDirection = "left";
             }
             break;
         };
         case "ArrowRight" : {
             if (crntDirection != "left") {
-                crntDirection = "right";
+                tmpDirection = "right";
             }
             break;
         }
@@ -72,7 +73,8 @@ function getRandom(min, max) {
 function launchSnake() {
     autoMove = setInterval(function step() {
         snakeMove(crntDirection);
-    }, 300);
+        crntDirection = tmpDirection;
+    }, 150);
 }
 
 function eatItself(pos) {
@@ -89,6 +91,9 @@ function eatItself(pos) {
 
 function addApple() {
     let appleField = document.getElementById(`${getRandom(0, fieldSize)}_${getRandom(0, fieldSize)}`);
+    if (appleField.classList.contains("snake")) {
+        appleField = addApple(); 
+    }
     appleField.classList.add("apple");
     return appleField;
 }
@@ -149,14 +154,13 @@ function posCheck(step) {
 
 function snakeMove(direction) {
     if (snake.length == 0) createSnake();
-    let tmpDirection = direction.slice(0);
 
     let crntHeadPos = snake[0].id.split("_");
     let posY = crntHeadPos[0];
     let posX = crntHeadPos[1];
     let snakeStep;
 
-    switch(tmpDirection) {
+    switch(direction) {
         case "up" : {
             snakeStep = document.getElementById(`${posCheck(--posY)}_${posX}`);
             break;
