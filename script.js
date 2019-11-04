@@ -138,8 +138,10 @@ function createSnake() {
         ];
     }
     for (let snakePart of snake) {
-        snakePart.classList.add("snake");
+        snakePart.classList.add("snake");        
     }
+    snake[0].classList.add("snake__head");
+    snake[1].classList.remove("snake__head");
 }
 
 function posCheck(step) {
