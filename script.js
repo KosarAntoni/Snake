@@ -1,25 +1,57 @@
 let snake = [];
 let autoMove;
 let endGame = false;
-let lastDirection;
 let crntDirection = "right";
 let fieldSize = 20;
 
+document.addEventListener("keydown", function(event) {
+    switch(event.code) {
+        case "ArrowUp" : {
+            if (crntDirection != "down") {
+                crntDirection = "up";
+            }
+            break;
+        };
+        case "ArrowDown" : {
+            if (crntDirection != "up") {
+                crntDirection = "down";
+            }
+            break;
+        };
+        case "ArrowLeft" : {
+            if (crntDirection != "right") {
+                crntDirection = "left";
+            }
+            break;
+        };
+        case "ArrowRight" : {
+            if (crntDirection != "left") {
+                crntDirection = "right";
+            }
+            break;
+        }
+    }
+})
+
 document.getElementById("btnUp").addEventListener("click", function() {
-    lastDirection = crntDirection;
-    crntDirection = "up";
+    if (crntDirection != "down") {
+        crntDirection = "up";
+    }
 });
 document.getElementById("btnDown").addEventListener("click", function() {
-    lastDirection = crntDirection;
-    crntDirection = "down";
+    if (crntDirection != "up") {
+        crntDirection = "down";
+    }
 });
 document.getElementById("btnLeft").addEventListener("click", function() {
-    lastDirection = crntDirection;
-    crntDirection = "left";
+    if (crntDirection != "right") {
+        crntDirection = "left";
+    }
 });
 document.getElementById("btnRight").addEventListener("click", function() {
-    lastDirection = crntDirection;
-    crntDirection = "right";
+    if (crntDirection != "left") {
+        crntDirection = "right";
+    }
 });
 document.getElementById("btnStop").addEventListener("click", function() {
     clearTimeout(autoMove);
@@ -38,7 +70,7 @@ function getRandom(min, max) {
 }
 
 function launchSnake() {
-    return autoMove = setInterval(function step() {
+    autoMove = setInterval(function step() {
         snakeMove(crntDirection);
     }, 300);
 }
@@ -91,7 +123,6 @@ function createField(fieldSize) {
 
 function createSnake() {
     if (snake.length == 0) {
-        lastDirection = null;
         crntDirection = "right";
         snake = [
             document.getElementById("3_5"),
@@ -116,53 +147,29 @@ function posCheck(step) {
     }
 }
 
-function checkDirection(direction) {
-    if (lastDirection == "up" && crntDirection == "down") {
-        return lastDirection;
-    }
-    if (lastDirection == "down" && crntDirection == "up") {
-        return lastDirection;
-    }
-    if (lastDirection == "left" && crntDirection == "right") {
-        return lastDirection;
-    }
-    if (lastDirection == "right" && crntDirection == "left") {
-        return lastDirection;
-    }
-    return direction;
-}
-
 function snakeMove(direction) {
-    console.log("Hssss");
-    console.log(endGame);
-
     if (snake.length == 0) createSnake();
+    let tmpDirection = direction.slice(0);
 
     let crntHeadPos = snake[0].id.split("_");
     let posY = crntHeadPos[0];
     let posX = crntHeadPos[1];
     let snakeStep;
 
-    direction = checkDirection(direction);
-
-    switch(direction) {
+    switch(tmpDirection) {
         case "up" : {
-            crntDirection = "up";
             snakeStep = document.getElementById(`${posCheck(--posY)}_${posX}`);
             break;
         }
         case "down" : {
-            crntDirection = "down";
             snakeStep = document.getElementById(`${posCheck(++posY)}_${posX}`);
             break;
         }
         case "left" : {
-            crntDirection = "left";
             snakeStep = document.getElementById(`${posY}_${posCheck(--posX)}`);
             break;
         }
         case "right" : {
-            crntDirection = "right";
             snakeStep = document.getElementById(`${posY}_${posCheck(++posX)}`);
             break;
         }
