@@ -47,14 +47,8 @@ nav {
 }
 
 #btnLeft,
-<<<<<<< HEAD
-#btnRight {
-    width: 50%;
-}
-=======
 #btnRight,
 #btnStart,
 #btnStop {
     width: 50%;
 }
->>>>>>> master
