@@ -6,19 +6,29 @@ body{
 }
 
 section {
+    position: relative;
+
     width: 400px;
     height: 400px;
     margin-bottom: 20px;
 
+    border: 20px solid #4D9316;
+    border-radius: 10px;
+
     display: flex;
     flex-wrap: wrap;
+
+    background-color: #9EDC56;
+    background-image:
+        linear-gradient(45deg, #86D42B 25%, transparent 25%,transparent 75%, #86D42B 75%, #86D42B 100%),
+        linear-gradient(45deg, #86D42B 25%, transparent 25%,transparent 75%, #86D42B 75%, #86D42B 100%);
+    background-size:40px 40px;
+    background-position:0 0, 20px 20px;
 }
 
 .square {
     width: 20px;
     height: 20px;
-    box-sizing: border-box;
-    border: 1px solid green;
 }
 
 .apple {
@@ -28,13 +38,68 @@ section {
 
 .snake {
     border: none;
-    background: red;
+    background: #DB6B24;
+
+    filter: drop-shadow(3px 3px 0 black);
 }
 
 .snake__head {
+    position: relative;
+    z-index: 10;
+
     border: none;
-    background: #000;
+    border-radius: 0 50% 50% 0;
+    background: #DB6B24;
+    
 }
+
+.snake__head::after {
+    content: "";
+    position: absolute;
+    top: -5px;
+    left: -5px;
+
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+
+    border: 3px solid #DB6B24;
+    background: #fff;
+}
+
+.snake__head::before {
+    content: "";
+    position: absolute;
+    bottom: -5px;
+    left: -5px;
+
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+
+    border: 3px solid #DB6B24;
+    background: #fff;
+}
+
+.snake__part--rotate_up {
+    transform: rotate(-90deg);
+    filter: drop-shadow(-3px 3px 0 black);
+}
+
+.snake__part--rotate_down {
+    transform: rotate(90deg);
+    filter: drop-shadow(3px -3px 0 black);
+}
+
+.snake__part--rotate_left {
+    transform: rotate(-180deg);
+    filter: drop-shadow(3px -3px 0 black);
+}
+
+.snake__tail {
+    border-radius: 50% 0 0 50%;
+}
+
 
 nav {
     display: flex;

@@ -34,26 +34,26 @@ document.addEventListener("keydown", function(event) {
     }
 })
 
-document.getElementById("btnUp").addEventListener("click", function() {
-    if (crntDirection != "down") {
-        crntDirection = "up";
-    }
-});
-document.getElementById("btnDown").addEventListener("click", function() {
-    if (crntDirection != "up") {
-        crntDirection = "down";
-    }
-});
-document.getElementById("btnLeft").addEventListener("click", function() {
-    if (crntDirection != "right") {
-        crntDirection = "left";
-    }
-});
-document.getElementById("btnRight").addEventListener("click", function() {
-    if (crntDirection != "left") {
-        crntDirection = "right";
-    }
-});
+// document.getElementById("btnUp").addEventListener("click", function() {
+//     if (crntDirection != "down") {
+//         crntDirection = "up";
+//     }
+// });
+// document.getElementById("btnDown").addEventListener("click", function() {
+//     if (crntDirection != "up") {
+//         crntDirection = "down";
+//     }
+// });
+// document.getElementById("btnLeft").addEventListener("click", function() {
+//     if (crntDirection != "right") {
+//         crntDirection = "left";
+//     }
+// });
+// document.getElementById("btnRight").addEventListener("click", function() {
+//     if (crntDirection != "left") {
+//         crntDirection = "right";
+//     }
+// });
 document.getElementById("btnStop").addEventListener("click", function() {
     clearTimeout(autoMove);
 });
@@ -82,9 +82,10 @@ function eatItself(pos) {
         clearInterval(autoMove);   
         autoMove = null;  
         for(let part of snake) {
-            part.classList.remove("snake");
+            part.classList.remove("snake", "snake__head");
         }
         endGame = true;
+        crntDirection = "right";
         snake = [];
     }    
 }
@@ -110,17 +111,12 @@ function createField(fieldSize) {
     let gameField = document.querySelector(".game__field");
     
     for (let y = 0; y < fieldSize; y++) {
-
         let tmpId = y + "_";
-
         for (let x = 0; x < fieldSize; x++) {
-
             let id = tmpId + x;
-
             let fieldBox = document.createElement("div");
-            fieldBox.classList.add("square")
+            fieldBox.classList.add("square");
             fieldBox.setAttribute("id", id);
-
             gameField.append(fieldBox);
         }
     }
@@ -138,10 +134,20 @@ function createSnake() {
         ];
     }
     for (let snakePart of snake) {
-        snakePart.classList.add("snake");        
+        snakePart.classList.add("snake"); 
     }
     snake[0].classList.add("snake__head");
-    snake[1].classList.remove("snake__head");
+    if (crntDirection == "up") snake[0].classList.add("snake__part--rotate_up");
+    if (crntDirection == "down") snake[0].classList.add("snake__part--rotate_down");
+    if (crntDirection == "left") snake[0].classList.add("snake__part--rotate_left");
+    snake[1].classList.remove("snake__head", 
+                              "snake__part--rotate_up", 
+                              "snake__part--rotate_down", 
+                              "snake__part--rotate_left");
+    // snake[snake.length - 1].classList.add("snake__tail");
+    // if (crntDirection == "up") snake[snake.length - 1].classList.add("snake__part--rotate_up");
+    // if (crntDirection == "down") snake[snake.length - 1].classList.add("snake__part--rotate_down");
+    // if (crntDirection == "left") snake[snake.length - 1].classList.add("snake__part--rotate_left");
 }
 
 function posCheck(step) {
@@ -185,7 +191,11 @@ function snakeMove(direction) {
     if (endGame == true) return;
 
     if (eatApple(snakeStep) != "nomnom" ) {
-        snake[snake.length - 1].classList.remove("snake");
+        snake[snake.length - 1].classList.remove("snake", 
+                                                 "snake__tail", 
+                                                 "snake__part--rotate_up", 
+                                                 "snake__part--rotate_down", 
+                                                 "snake__part--rotate_left");
         snake.pop();
     }  
 
