@@ -2,6 +2,7 @@ let snake = [];
 let autoMove;
 let endGame = false;
 let tmpDirection = "right";
+let lastDirection = "right";
 let crntDirection = "right";
 let fieldSize = 20;
 
@@ -82,10 +83,19 @@ function eatItself(pos) {
         clearInterval(autoMove);   
         autoMove = null;  
         for(let part of snake) {
-            part.classList.remove("snake", "snake__head");
+            part.classList.remove("snake", 
+                                  "snake__head",
+                                  "snake__tail", 
+                                  "snake__part--rotate_up", 
+                                  "snake__part--rotate_down", 
+                                  "snake__part--rotate_left",
+                                  "snake__part--rotate_right",
+                                  "snake__twist--right",
+                                  "snake__twist--left");
         }
         endGame = true;
         crntDirection = "right";
+        lastDirection = "right";
         snake = [];
     }    
 }
@@ -140,14 +150,46 @@ function createSnake() {
     if (crntDirection == "up") snake[0].classList.add("snake__part--rotate_up");
     if (crntDirection == "down") snake[0].classList.add("snake__part--rotate_down");
     if (crntDirection == "left") snake[0].classList.add("snake__part--rotate_left");
-    snake[1].classList.remove("snake__head", 
-                              "snake__part--rotate_up", 
-                              "snake__part--rotate_down", 
-                              "snake__part--rotate_left");
-    // snake[snake.length - 1].classList.add("snake__tail");
-    // if (crntDirection == "up") snake[snake.length - 1].classList.add("snake__part--rotate_up");
-    // if (crntDirection == "down") snake[snake.length - 1].classList.add("snake__part--rotate_down");
-    // if (crntDirection == "left") snake[snake.length - 1].classList.add("snake__part--rotate_left");
+    if (crntDirection == "right") snake[0].classList.add("snake__part--rotate_right");
+    snake[1].classList.remove("snake__head");
+
+    if (lastDirection == "right" && crntDirection == "down" || 
+        lastDirection == "down" && crntDirection == "left" ||
+        lastDirection == "left" && crntDirection == "up" ||
+        lastDirection == "up" && crntDirection == "right") snake[1].classList.add("snake__twist--right");
+
+    if (lastDirection == "right" && crntDirection == "up" || 
+        lastDirection == "up" && crntDirection == "left" ||
+        lastDirection == "left" && crntDirection == "down" ||
+        lastDirection == "down" && crntDirection == "right") snake[1].classList.add("snake__twist--left");
+
+    if (snake[snake.length - 2].classList.contains("snake__part--rotate_up")) {
+        snake[snake.length - 1].classList.remove("snake__part--rotate_up", 
+                                                 "snake__part--rotate_down", 
+                                                 "snake__part--rotate_left");
+        snake[snake.length - 1].classList.add("snake__part--rotate_up");
+    }
+    if (snake[snake.length - 2].classList.contains("snake__part--rotate_down")) {
+        snake[snake.length - 1].classList.remove("snake__part--rotate_up", 
+                                                 "snake__part--rotate_down", 
+                                                 "snake__part--rotate_left");
+        snake[snake.length - 1].classList.add("snake__part--rotate_down");
+    }
+    if (snake[snake.length - 2].classList.contains("snake__part--rotate_left")) {
+        snake[snake.length - 1].classList.remove("snake__part--rotate_up", 
+                                                 "snake__part--rotate_down", 
+                                                 "snake__part--rotate_left");
+        snake[snake.length - 1].classList.add("snake__part--rotate_left");
+    }
+    if (snake[snake.length - 2].classList.contains("snake__part--rotate_right")) {
+        snake[snake.length - 1].classList.remove("snake__part--rotate_up", 
+                                                 "snake__part--rotate_down", 
+                                                 "snake__part--rotate_left");
+        snake[snake.length - 1].classList.add("snake__part--rotate_right");
+    }
+
+    snake[snake.length - 1].classList.add("snake__tail");
+    lastDirection = crntDirection;
 }
 
 function posCheck(step) {
@@ -195,7 +237,10 @@ function snakeMove(direction) {
                                                  "snake__tail", 
                                                  "snake__part--rotate_up", 
                                                  "snake__part--rotate_down", 
-                                                 "snake__part--rotate_left");
+                                                 "snake__part--rotate_left",
+                                                 "snake__part--rotate_right",
+                                                 "snake__twist--right",
+                                                 "snake__twist--left");
         snake.pop();
     }  
 

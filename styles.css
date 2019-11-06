@@ -93,9 +93,16 @@ section {
 
 .snake__part--rotate_left {
     transform: rotate(-180deg);
-    filter: drop-shadow(3px -3px 0 black);
+    filter: drop-shadow(-3px -3px 0 black);
 }
 
+.snake__twist--right {
+    border-radius: 0 50% 0 0 ;
+}
+
+.snake__twist--left {
+    border-radius: 0 0 50% 0 ;
+}
 .snake__tail {
     border-radius: 50% 0 0 50%;
 }
