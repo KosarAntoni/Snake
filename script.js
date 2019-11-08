@@ -4,8 +4,11 @@ let endGame = true;
 let tmpDirection = "right";
 let lastDirection = "right";
 let crntDirection = "right";
+let score = 0;
+let scoreBox = document.querySelector("#actualScore");
+let startPauseBtn = document.getElementById("btnStart");
 let fieldSizeX = Math.floor(document.documentElement.clientWidth / 20) - 3;
-let fieldSizeY = Math.floor(document.documentElement.clientHeight / 20) - 3;
+let fieldSizeY = Math.floor(document.documentElement.clientHeight / 20) - 4;
 
 document.addEventListener("keydown", function(event) {
     switch(event.code) {
@@ -35,41 +38,6 @@ document.addEventListener("keydown", function(event) {
         }
     }
 })
-
-// function getTime() {
-//     return new Date().getTime();
-// };
-
-//     document.addEventListener('touchstart', function(e) {
-//         xTouch = parseInt(e.touches[0].clientX);
-//         yTouch = parseInt(e.touches[0].clientY);
-//         stTime = getTime()
-//         e.preventDefault();
-//     }, false);
-//     document.addEventListener('touchmove', function(e) {
-//         if(!xTouch || !yTouch) return;
-//         xDiff = xTouch - parseInt(e.touches[0].clientX);
-//         yDiff = yTouch - parseInt(e.touches[0].clientY);
-//         mvTime = getTime();
-//         if(Math.abs(xDiff) > 15 && Math.abs(xDiff) > Math.abs(yDiff) && mvTime - stTime < 75) {
-//             stTime = 0;
-//             if(xDiff > 0 && crntDirection != "right") {
-//                 tmpDirection = "left";
-//             }
-//             else if(xDiff < 0 && crntDirection != "left") {
-//                 tmpDirection = "right";
-//             }
-//         }
-//         if(Math.abs(yDiff) > 15 && Math.abs(yDiff) > Math.abs(xDiff) && mvTime - stTime < 75) {
-//             stTime = 0;
-//             if(yDiff < 0 && crntDirection != "up") {
-//                 tmpDirection = "down";
-//             }
-//             else if(yDiff > 0 && crntDirection != "down") {
-//                 tmpDirection = "up";
-//             }
-//         }
-//     }, false)
 
 document.addEventListener('touchstart', handleTouchStart, false);        
 document.addEventListener('touchmove', handleTouchMove, false);
@@ -110,14 +78,19 @@ function handleTouchMove(evt) {
     yDown = null;
 };
 
-document.getElementById("btnStart").addEventListener("click", function() {
-    tmpDirection = "right";
-    lastDirection = "right";
-    crntDirection = "right";
-    endGame = false;
-    createSnake();
-    clearTimeout(autoMove);
-    launchSnake();
+startPauseBtn.addEventListener("click", function() {
+    if (endGame == true) {
+        score = 0;
+        scoreBox.textContent = score; 
+        endGame = false;
+        createSnake();
+        launchSnake();
+        startPauseBtn.classList.add("paused")
+    } else {
+        clearInterval(autoMove);
+        startPauseBtn.classList.remove("paused")
+        endGame = true;
+    }
 });
 
 function getRandom(min, max) {
@@ -134,9 +107,8 @@ function launchSnake() {
 }
 
 function eatItself(pos) {
-    if (pos.classList.contains("snake")) {  
-        clearInterval(autoMove);   
-        autoMove = null;  
+    if (pos.classList.contains("snake") ) {  
+        clearInterval(autoMove);    
         for(let part of snake) {
             part.classList.remove("snake", 
                                   "snake__head",
@@ -150,6 +122,9 @@ function eatItself(pos) {
         }
         endGame = true;
         snake = [];
+        tmpDirection = "right";
+        lastDirection = "right";
+        crntDirection = "right";
     }    
 }
 
@@ -166,12 +141,16 @@ function eatApple(pos) {
     if (pos.classList.contains("apple")) {
         pos.classList.remove("apple");
         addApple();
+        score++;
+        scoreBox.textContent = score;
         return "nomnom"
     }
 }
 
 function createField(fieldSizeX) {
     let gameField = document.querySelector(".game__field");
+    let scoreField = document.querySelector(".status");
+    scoreField.style.width = `${fieldSizeX * 20}px`;
     gameField.style.width = `${fieldSizeX * 20}px`;
     gameField.style.height = `${fieldSizeY * 20}px`;
     
