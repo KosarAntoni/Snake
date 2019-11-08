@@ -44,7 +44,11 @@ section {
 }
 
 .apple {
+    position: relative;
+
     border: none;
+    border-radius: 50%;
+    background: crimson;
     font-size: 20px;
     filter: drop-shadow(2px 2px 0 rgba(0, 0, 0 ,0.3));
 
@@ -53,8 +57,27 @@ section {
     align-items: center;
 }
 
+.apple::before {
+    content: "";
+    position: absolute;
+
+    width: 2px;
+    height: 6px;
+    background: brown;
+    top: -6px;
+    left: 9px;
+}
+
 .apple::after {
-    content: "🍎";
+    content: "";
+    position: absolute;
+
+    border-radius: 50%;
+    width: 10px;
+    height: 5px;
+    background: darkgreen;
+    top: -5px;
+    left: 9px;
 }
 
 .snake {
@@ -84,8 +107,9 @@ section {
     height: 10px;
     border-radius: 50%;
 
+    box-shadow: inset 4px 0 0 white;
     border: 3px solid #DB6B24;
-    background: #fff;
+    background: black ;
 }
 
 .snake__head::before {
@@ -98,8 +122,9 @@ section {
     height: 10px;
     border-radius: 50%;
 
+    box-shadow: inset 4px 0 0 white;
     border: 3px solid #DB6B24;
-    background: #fff;
+    background: black ;
 }
 
 .snake__part--rotate_up {
