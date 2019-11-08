@@ -46,6 +46,7 @@ function getTime() {
         stTime = getTime()
     }, false);
     document.addEventListener('touchmove', function(e) {
+        e.preventDefault();
         if(!xTouch || !yTouch) return;
         xDiff = xTouch - parseInt(e.touches[0].clientX);
         yDiff = yTouch - parseInt(e.touches[0].clientY);
