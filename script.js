@@ -80,8 +80,6 @@ function handleTouchMove(evt) {
 
 startPauseBtn.addEventListener("click", function() {
     if (endGame == true) {
-        score = 0;
-        scoreBox.textContent = score; 
         endGame = false;
         createSnake();
         launchSnake();
@@ -103,7 +101,7 @@ function launchSnake() {
     autoMove = setInterval(function step() {
         snakeMove(crntDirection);
         crntDirection = tmpDirection;
-    }, 150);
+    }, 200);
 }
 
 function eatItself(pos) {
@@ -121,6 +119,8 @@ function eatItself(pos) {
                                   "snake__twist--left");
         }
         endGame = true;
+        score = 0;
+        scoreBox.textContent = score; 
         snake = [];
         tmpDirection = "right";
         lastDirection = "right";
