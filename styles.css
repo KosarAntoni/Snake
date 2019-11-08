@@ -1,4 +1,21 @@
+* {
+    margin: 0;
+    padding: 0; 
+}
+
+html {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
 body{
+    background: #4D9316;
+    padding: 10px;
+    height: 100%;
+
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -6,13 +23,8 @@ body{
 }
 
 section {
-    position: relative;
-
-    width: 400px;
-    height: 400px;
     margin-bottom: 20px;
-
-    border: 20px solid #4D9316;
+    box-sizing: border-box;
     border-radius: 10px;
 
     display: flex;
@@ -33,14 +45,23 @@ section {
 
 .apple {
     border: none;
-    background: green;
+    font-size: 20px;
+    filter: drop-shadow(2px 2px 0 rgba(0, 0, 0 ,0.3));
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.apple::after {
+    content: "🍎";
 }
 
 .snake {
     border: none;
     background: #DB6B24;
 
-    filter: drop-shadow(3px 3px 0 black);
+    filter: drop-shadow(3px 3px 0 rgba(0, 0, 0 ,0.3));
 }
 
 .snake__head {
@@ -83,17 +104,17 @@ section {
 
 .snake__part--rotate_up {
     transform: rotate(-90deg);
-    filter: drop-shadow(-3px 3px 0 black);
+    filter: drop-shadow(-3px 3px 0 rgba(0, 0, 0 ,0.3));
 }
 
 .snake__part--rotate_down {
     transform: rotate(90deg);
-    filter: drop-shadow(3px -3px 0 black);
+    filter: drop-shadow(3px -3px 0 rgba(0, 0, 0 ,0.3));
 }
 
 .snake__part--rotate_left {
     transform: rotate(-180deg);
-    filter: drop-shadow(-3px -3px 0 black);
+    filter: drop-shadow(-3px -3px 0 rgba(0, 0, 0 ,0.3));
 }
 
 .snake__twist--right {
@@ -111,16 +132,4 @@ section {
 nav {
     display: flex;
     flex-wrap: wrap;
-}
-
-#btnUp,
-#btnDown {
-    width: 100%;
-}
-
-#btnLeft,
-#btnRight,
-#btnStart,
-#btnStop {
-    width: 50%;
 }

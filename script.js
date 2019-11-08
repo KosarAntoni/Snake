@@ -1,10 +1,11 @@
 let snake = [];
 let autoMove;
-let endGame = false;
+let endGame = true;
 let tmpDirection = "right";
 let lastDirection = "right";
 let crntDirection = "right";
-let fieldSize = 20;
+let fieldSizeX = Math.floor(document.documentElement.clientWidth / 20) - 3;
+let fieldSizeY = Math.floor(document.documentElement.clientHeight / 20) - 3;
 
 document.addEventListener("keydown", function(event) {
     switch(event.code) {
@@ -35,30 +36,44 @@ document.addEventListener("keydown", function(event) {
     }
 })
 
-// document.getElementById("btnUp").addEventListener("click", function() {
-//     if (crntDirection != "down") {
-//         crntDirection = "up";
-//     }
-// });
-// document.getElementById("btnDown").addEventListener("click", function() {
-//     if (crntDirection != "up") {
-//         crntDirection = "down";
-//     }
-// });
-// document.getElementById("btnLeft").addEventListener("click", function() {
-//     if (crntDirection != "right") {
-//         crntDirection = "left";
-//     }
-// });
-// document.getElementById("btnRight").addEventListener("click", function() {
-//     if (crntDirection != "left") {
-//         crntDirection = "right";
-//     }
-// });
-document.getElementById("btnStop").addEventListener("click", function() {
-    clearTimeout(autoMove);
-});
+function getTime() {
+    return new Date().getTime();
+};
+
+    document.addEventListener('touchstart', function(e) {
+        xTouch = parseInt(e.touches[0].clientX);
+        yTouch = parseInt(e.touches[0].clientY);
+        stTime = getTime()
+    }, false);
+    document.addEventListener('touchmove', function(e) {
+        if(!xTouch || !yTouch) return;
+        xDiff = xTouch - parseInt(e.touches[0].clientX);
+        yDiff = yTouch - parseInt(e.touches[0].clientY);
+        mvTime = getTime();
+        if(Math.abs(xDiff) > 15 && Math.abs(xDiff) > Math.abs(yDiff) && mvTime - stTime < 75) {
+            stTime = 0;
+            if(xDiff > 0 && crntDirection != "right") {
+                tmpDirection = "left";
+            }
+            else if(xDiff < 0 && crntDirection != "left") {
+                tmpDirection = "right";
+            }
+        }
+        if(Math.abs(yDiff) > 15 && Math.abs(yDiff) > Math.abs(xDiff) && mvTime - stTime < 75) {
+            stTime = 0;
+            if(yDiff < 0 && crntDirection != "up") {
+                tmpDirection = "down";
+            }
+            else if(yDiff > 0 && crntDirection != "down") {
+                tmpDirection = "up";
+            }
+        }
+    }, false)
+
 document.getElementById("btnStart").addEventListener("click", function() {
+    tmpDirection = "right";
+    lastDirection = "right";
+    crntDirection = "right";
     endGame = false;
     createSnake();
     clearTimeout(autoMove);
@@ -94,14 +109,12 @@ function eatItself(pos) {
                                   "snake__twist--left");
         }
         endGame = true;
-        crntDirection = "right";
-        lastDirection = "right";
         snake = [];
     }    
 }
 
 function addApple() {
-    let appleField = document.getElementById(`${getRandom(0, fieldSize)}_${getRandom(0, fieldSize)}`);
+    let appleField = document.getElementById(`${getRandom(0, fieldSizeY)}_${getRandom(0, fieldSizeX)}`);
     if (appleField.classList.contains("snake")) {
         appleField = addApple(); 
     }
@@ -117,12 +130,14 @@ function eatApple(pos) {
     }
 }
 
-function createField(fieldSize) {
+function createField(fieldSizeX) {
     let gameField = document.querySelector(".game__field");
+    gameField.style.width = `${fieldSizeX * 20}px`;
+    gameField.style.height = `${fieldSizeY * 20}px`;
     
-    for (let y = 0; y < fieldSize; y++) {
+    for (let y = 0; y < fieldSizeY; y++) {
         let tmpId = y + "_";
-        for (let x = 0; x < fieldSize; x++) {
+        for (let x = 0; x < fieldSizeX; x++) {
             let id = tmpId + x;
             let fieldBox = document.createElement("div");
             fieldBox.classList.add("square");
@@ -192,11 +207,21 @@ function createSnake() {
     lastDirection = crntDirection;
 }
 
-function posCheck(step) {
-    if (step > fieldSize - 1) {
+function posCheckX(step) {
+    if (step > fieldSizeX - 1) {
         return 0; 
     } else if (step < 0) {
-        return fieldSize - 1; 
+        return fieldSizeX - 1; 
+    } else {
+        return step;
+    }
+}
+
+function posCheckY(step) {
+    if (step > fieldSizeY - 1) {
+        return 0; 
+    } else if (step < 0) {
+        return fieldSizeY - 1; 
     } else {
         return step;
     }
@@ -212,25 +237,24 @@ function snakeMove(direction) {
 
     switch(direction) {
         case "up" : {
-            snakeStep = document.getElementById(`${posCheck(--posY)}_${posX}`);
+            snakeStep = document.getElementById(`${posCheckY(--posY)}_${posX}`);
             break;
         }
         case "down" : {
-            snakeStep = document.getElementById(`${posCheck(++posY)}_${posX}`);
+            snakeStep = document.getElementById(`${posCheckY(++posY)}_${posX}`);
             break;
         }
         case "left" : {
-            snakeStep = document.getElementById(`${posY}_${posCheck(--posX)}`);
+            snakeStep = document.getElementById(`${posY}_${posCheckX(--posX)}`);
             break;
         }
         case "right" : {
-            snakeStep = document.getElementById(`${posY}_${posCheck(++posX)}`);
+            snakeStep = document.getElementById(`${posY}_${posCheckX(++posX)}`);
             break;
         }
     }
     eatItself(snakeStep);
-    
-    if (endGame == true) return;
+    if (endGame) return;
 
     if (eatApple(snakeStep) != "nomnom" ) {
         snake[snake.length - 1].classList.remove("snake", 
@@ -249,5 +273,5 @@ function snakeMove(direction) {
     if (!endGame) createSnake()
 }
 
-createField(fieldSize);
+createField(fieldSizeX);
 addApple()
