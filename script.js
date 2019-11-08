@@ -7,7 +7,7 @@ let crntDirection = "right";
 let score = 0;
 let scoreBox = document.querySelector("#actualScore");
 let startPauseBtn = document.getElementById("btnStart");
-let fieldSizeX = Math.floor(document.documentElement.clientWidth / 20) - 3;
+let fieldSizeX = Math.floor(document.documentElement.clientWidth / 20) - 2;
 let fieldSizeY = Math.floor(document.documentElement.clientHeight / 20) - 4;
 
 document.addEventListener("keydown", function(event) {
@@ -121,6 +121,7 @@ function eatItself(pos) {
         endGame = true;
         score = 0;
         scoreBox.textContent = score; 
+        startPauseBtn.classList.remove("paused");
         snake = [];
         tmpDirection = "right";
         lastDirection = "right";
