@@ -41,8 +41,8 @@ document.addEventListener("keydown", function(event) {
 
 document.addEventListener('touchstart', handleTouchStart, false);        
 document.addEventListener('touchmove', handleTouchMove, false);
-var xDown = null;                                                        
-var yDown = null;                                                        
+let xDown = null;                                                        
+let yDown = null;                                                        
 function handleTouchStart(evt) {                                         
     xDown = evt.touches[0].clientX;                                      
     yDown = evt.touches[0].clientY;                                      
@@ -53,11 +53,11 @@ function handleTouchMove(evt) {
         return;
     }
 
-    var xUp = evt.touches[0].clientX;                                    
-    var yUp = evt.touches[0].clientY;
+    let xUp = evt.touches[0].clientX;                                    
+    let yUp = evt.touches[0].clientY;
 
-    var xDiff = xDown - xUp;
-    var yDiff = yDown - yUp;
+    let xDiff = xDown - xUp;
+    let yDiff = yDown - yUp;
     if ( Math.abs( xDiff ) > Math.abs( yDiff ) ) {/*most significant*/
             if(xDiff > 0 && crntDirection != "right") {
                 tmpDirection = "left";
@@ -148,7 +148,7 @@ function eatApple(pos) {
     }
 }
 
-function createField(fieldSizeX) {
+function createField() {
     let gameField = document.querySelector(".game__field");
     let scoreField = document.querySelector(".status");
     scoreField.style.width = `${fieldSizeX * 20}px`;
@@ -293,5 +293,5 @@ function snakeMove(direction) {
     if (!endGame) createSnake()
 }
 
-createField(fieldSizeX);
+createField();
 addApple()
