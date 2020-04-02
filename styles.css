@@ -53,11 +53,6 @@ section::after {
                 0 0 0 10px #4D9316;
 }
 
-.square {
-    width: 20px;
-    height: 20px;
-}
-
 .apple {
     position: relative;
 
@@ -99,10 +94,19 @@ section::after {
 }
 
 .snake {
+    position: absolute;
+    display: block;
+    top: 0;
+    left: 0;
+    width: 20px;
+    height: 20px;
+    z-index: 10;
+
     border: none;
+    border-radius: 0 50% 50% 0;
     background: #DB6B24;
 
-    filter: drop-shadow(3px 3px 0 rgba(0, 0, 0 ,0.3));
+    transition-timing-function: linear;
 }
 
 .snake__head {
@@ -111,8 +115,7 @@ section::after {
 
     border: none;
     border-radius: 0 50% 50% 0;
-    background: #DB6B24;
-    
+    background: #DB6B24;    
 }
 
 .snake__head::after {
