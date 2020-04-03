@@ -102,77 +102,104 @@ section::after {
     height: 20px;
     z-index: 10;
 
-    border: none;
-    border-radius: 0 50% 50% 0;
+    border-radius: 30% 50% 50% 30%;
     background: #DB6B24;
 
     transition-timing-function: linear;
 }
 
-.snake__head {
-    position: relative;
+.snake_segment {
+    position: absolute;
+    display: block;
+    top: 0;
+    left: 0;
+    width: 20px;
+    height: 20px;
     z-index: 10;
 
-    border: none;
-    border-radius: 0 50% 50% 0;
-    background: #DB6B24;    
+    border-radius: 40% 30% 30% 30%;
+    background: #DB6B24;
+
+    transition-timing-function: linear;
 }
 
-.snake__head::after {
-    content: "";
+.snake_tail {
     position: absolute;
-    top: -5px;
-    left: -5px;
+    display: block;
+    top: 0;
+    left: 0;
+    width: 20px;
+    height: 20px;
+    z-index: 10;
 
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
+    border-radius: 50% 30% 30% 50%;
+    background: #DB6B24;
 
-    box-shadow: inset 4px 0 0 white;
-    border: 3px solid #DB6B24;
-    background: black ;
+    transition-timing-function: linear;
 }
 
-.snake__head::before {
-    content: "";
-    position: absolute;
-    bottom: -5px;
-    left: -5px;
+/*.snake__head {*/
+/*    position: relative;*/
+/*    z-index: 10;*/
 
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
+/*    border: none;*/
+/*    border-radius: 0 50% 50% 0;*/
+/*    background: #DB6B24;    */
+/*}*/
 
-    box-shadow: inset 4px 0 0 white;
-    border: 3px solid #DB6B24;
-    background: black ;
-}
+/*.snake__head::after {*/
+/*    content: "";*/
+/*    position: absolute;*/
+/*    top: -5px;*/
+/*    left: -5px;*/
 
-.snake__part--rotate_up {
-    transform: rotate(-90deg);
-    filter: drop-shadow(-3px 3px 0 rgba(0, 0, 0 ,0.3));
-}
+/*    width: 10px;*/
+/*    height: 10px;*/
+/*    border-radius: 50%;*/
 
-.snake__part--rotate_down {
-    transform: rotate(90deg);
-    filter: drop-shadow(3px -3px 0 rgba(0, 0, 0 ,0.3));
-}
+/*    box-shadow: inset 4px 0 0 white;*/
+/*    border: 3px solid #DB6B24;*/
+/*    background: black ;*/
+/*}*/
 
-.snake__part--rotate_left {
-    transform: rotate(-180deg);
-    filter: drop-shadow(-3px -3px 0 rgba(0, 0, 0 ,0.3));
-}
+/*.snake__head::before {*/
+/*    content: "";*/
+/*    position: absolute;*/
+/*    bottom: -5px;*/
+/*    left: -5px;*/
 
-.snake__twist--right {
-    border-radius: 0 50% 0 0 ;
-}
+/*    width: 10px;*/
+/*    height: 10px;*/
+/*    border-radius: 50%;*/
 
-.snake__twist--left {
-    border-radius: 0 0 50% 0 ;
-}
-.snake__tail {
-    border-radius: 50% 0 0 50%;
-}
+/*    box-shadow: inset 4px 0 0 white;*/
+/*    border: 3px solid #DB6B24;*/
+/*    background: black ;*/
+/*}*/
+
+/*.snake__part--rotate_up {*/
+/*    transform: rotate(-90deg);*/
+/*    filter: drop-shadow(-3px 3px 0 rgba(0, 0, 0 ,0.3));*/
+/*}*/
+
+/*.snake__part--rotate_down {*/
+/*    transform: rotate(90deg);*/
+/*    filter: drop-shadow(3px -3px 0 rgba(0, 0, 0 ,0.3));*/
+/*}*/
+
+/*.snake__part--rotate_left {*/
+/*    transform: rotate(-180deg);*/
+/*    filter: drop-shadow(-3px -3px 0 rgba(0, 0, 0 ,0.3));*/
+/*}*/
+
+/*.snake__twist--right {*/
+/*    border-radius: 0 50% 0 0 ;*/
+/*}*/
+
+/*.snake__twist--left {*/
+/*    border-radius: 0 0 50% 0 ;*/
+/*}*/
+
 
 .status {
     display: flex;

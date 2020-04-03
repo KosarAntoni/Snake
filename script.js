@@ -5,13 +5,20 @@ let nextStep = "right";
 let currentStep = "right";
 let headPosition = [0, 0, 0];
 
+snakeBody = [[0, 0, 0], [1, 0, 0], [2, 0, 0]];
+
 const snake = document.querySelector(".snake");
+const snakeSegment = document.querySelector(".snake_segment");
+const snakeTail = document.querySelector(".snake_tail");
+
 const scoreBox = document.querySelector("#actualScore");
 const startPauseBtn = document.querySelector("#btnStart");
 const fieldSizeX = Math.floor(document.documentElement.clientWidth / 20) - 2;
 const fieldSizeY = Math.floor(document.documentElement.clientHeight / 20) - 4;
 
 snake.style.transitionDuration = `${snakeSpeed}ms`;
+snakeSegment.style.transitionDuration = `${snakeSpeed}ms`;
+snakeTail.style.transitionDuration = `${snakeSpeed}ms`;
 
 // --------NAVIGATION SECTION ----------//
 
@@ -44,21 +51,21 @@ document.addEventListener("keydown", function(event) {
     }
 })
 
-document.addEventListener('touchstart', handleTouchStart, false);        
+document.addEventListener('touchstart', handleTouchStart, false);
 document.addEventListener('touchmove', handleTouchMove, false);
-let xDown = null;                                                        
-let yDown = null;                                                        
+let xDown = null;
+let yDown = null;
 function handleTouchStart(evt) {
-    xDown = evt.touches[0].clientX;                                      
-    yDown = evt.touches[0].clientY;                                      
-};   
+    xDown = evt.touches[0].clientX;
+    yDown = evt.touches[0].clientY;
+};
 
 function handleTouchMove(evt) {
     if ( ! xDown || ! yDown ) {
         return;
     }
 
-    let xUp = evt.touches[0].clientX;                                    
+    let xUp = evt.touches[0].clientX;
     let yUp = evt.touches[0].clientY;
 
     let xDiff = xDown - xUp;
@@ -69,14 +76,14 @@ function handleTouchMove(evt) {
             }
             else if(xDiff < 0 && currentStep != "left") {
                 nextStep = "right";
-            }                      
+            }
     } else {
             if(yDiff < 0 && currentStep != "up") {
                 nextStep = "down";
             }
             else if(yDiff > 0 && currentStep != "down") {
                 nextStep = "up";
-            }                                                               
+            }
     }
     /* reset values */
     xDown = null;
@@ -97,19 +104,19 @@ startPauseBtn.addEventListener("click", () => {
     }
 });
 
-function getRandom(min, max) {
+const getRandom = (min, max) => {
     min = Math.ceil(min);
     max = Math.floor(max);
     return Math.floor(Math.random() * (max - min)) + min;
 }
 
-function createField() {
+const createField = () => {
     let gameField = document.querySelector(".game__field");
     gameField.style.width = `${fieldSizeX * 20}px`;
     gameField.style.height = `${fieldSizeY * 20}px`;
 }
 
-function posCheck(step, fieldSize) {
+const posCheck = (step, fieldSize) => {
     if (step > fieldSize - 1) {
         return 0;
     } else if (step < 0) {
@@ -119,49 +126,64 @@ function posCheck(step, fieldSize) {
     }
 }
 
-function snakeMove(direction) {
-    let [posX, posY, rotation] = headPosition;
+let snakeMove = () => {
+    snakeTail.style.transform = `translateX(${snakeBody[0][0] * 20}px) translateY(${snakeBody[0][1] * 20}px) rotate(${snakeBody[0][2]}deg)`;
+    snakeSegment.style.transform = `translateX(${snakeBody[1][0] * 20}px) translateY(${snakeBody[1][1] * 20}px) rotate(${snakeBody[1][2]}deg)`;
+    snake.style.transform = `translateX(${snakeBody[2][0] * 20}px) translateY(${snakeBody[2][1] * 20}px) rotate(${snakeBody[2][2]}deg)`;
+};
+
+const snakeDirection = (direction, segment = 2) => {
+    let [posX, posY, rotation] = snakeBody[segment];
 
     switch(direction) {
         case "up" : {
             posY = posCheck(--posY, fieldSizeY);
             if (nextStep == "right") rotation += 90;
             if (nextStep == "left") rotation -= 90;
-            headPosition = [posX, posY, rotation];
-            snake.style.transform = `translateX(${posX * 20}px) translateY(${posY * 20}px) rotate(${rotation}deg)`;
+            snakeBody[0] = snakeBody[1];
+            snakeBody[1] = snakeBody[2];
+            snakeBody[2] = [posX, posY, rotation];
+            snakeMove();
             break;
         }
         case "down" : {
             posY = posCheck(++posY, fieldSizeY);
             if (nextStep == "right") rotation -= 90;
             if (nextStep == "left") rotation += 90;
-            headPosition = [posX, posY, rotation];
-            snake.style.transform = `translateX(${posX * 20}px) translateY(${posY * 20}px) rotate(${rotation}deg)`;
+            snakeBody[0] = snakeBody[1];
+            snakeBody[1] = snakeBody[2];
+            snakeBody[2] = [posX, posY, rotation];
+            snakeMove();
             break;
         }
         case "left" : {
             posX = posCheck(--posX, fieldSizeX);
             if (nextStep == "down") rotation -= 90;
             if (nextStep == "up") rotation += 90;
-            headPosition = [posX, posY, rotation];
-            snake.style.transform = `translateX(${posX * 20}px) translateY(${posY * 20}px) rotate(${rotation}deg)`;
+            snakeBody[0] = snakeBody[1];
+            snakeBody[1] = snakeBody[2];
+            snakeBody[2] = [posX, posY, rotation];
+            snakeMove();
             break;
         }
         case "right" : {
             posX = posCheck(++posX, fieldSizeX);
             if (nextStep == "down") rotation += 90;
             if (nextStep == "up") rotation -= 90;
-            headPosition = [posX, posY, rotation];
-            snake.style.transform = `translateX(${posX * 20}px) translateY(${posY * 20}px) rotate(${rotation}deg)`;
+            snakeBody[0] = snakeBody[1];
+            snakeBody[1] = snakeBody[2];
+            snakeBody[2] = [posX, posY, rotation];
+            snakeMove();
             break;
         }
     }
 }
 
-function launchSnake() {
+const launchSnake = () => {
     autoMove = setInterval(() => {
-        snakeMove(currentStep);
+        snakeDirection(currentStep);
         currentStep = nextStep;
+        // console.log(snakeBody);
     }, snakeSpeed);
 }
 
