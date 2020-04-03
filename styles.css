@@ -54,7 +54,7 @@ section::after {
 }
 
 .apple {
-    position: relative;
+    position: absolute;
 
     width: 20px;
     height: 20px;
@@ -70,30 +70,30 @@ section::after {
     align-items: center;
 }
 
-.apple::before {
-    content: "";
-    position: absolute;
+/*.apple::before {*/
+/*    content: "";*/
+/*    position: absolute;*/
 
-    width: 2px;
-    height: 6px;
-    background: brown;
-    top: -6px;
-    left: 9px;
-}
+/*    width: 2px;*/
+/*    height: 6px;*/
+/*    background: brown;*/
+/*    top: -6px;*/
+/*    left: 9px;*/
+/*}*/
 
-.apple::after {
-    content: "";
-    position: absolute;
+/*.apple::after {*/
+/*    content: "";*/
+/*    position: absolute;*/
 
-    border-radius: 50%;
-    width: 10px;
-    height: 5px;
-    background: darkgreen;
-    top: -5px;
-    left: 9px;
-}
+/*    border-radius: 50%;*/
+/*    width: 10px;*/
+/*    height: 5px;*/
+/*    background: darkgreen;*/
+/*    top: -5px;*/
+/*    left: 9px;*/
+/*}*/
 
-.snake {
+.snake_head {
     position: absolute;
     display: block;
     top: 0;
@@ -117,7 +117,7 @@ section::after {
     height: 20px;
     z-index: 10;
 
-    border-radius: 40% 30% 30% 30%;
+    border-radius: 30% 30% 30% 30%;
     background: #DB6B24;
 
     transition-timing-function: linear;
@@ -223,7 +223,6 @@ section::after {
 }
 
 .btn-start {
-    border: 0;
     background: transparent;
     box-sizing: border-box;
     width: 0;
@@ -240,7 +239,7 @@ section::after {
 
 .btn-start.paused {
     border-style: double;
-    border-width: 0px 0 0px 18px;
+    border-width: 0 0 0 18px;
 }
 
 .btn-start:focus {
