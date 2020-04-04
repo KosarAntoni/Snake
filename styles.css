@@ -20,7 +20,7 @@ body{
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    /* to prevent siwpe gesture to refresh page */
+    /* to prevent swipe gesture to refresh page */
     overflow-y: hidden;
 }
 
@@ -38,8 +38,6 @@ section {
         linear-gradient(45deg, #86D42B 25%, transparent 25%,transparent 75%, #86D42B 75%, #86D42B 100%);
     background-size:40px 40px;
     background-position:0 0, 20px 20px;
-
-
 }
 
 section::after {
@@ -50,7 +48,7 @@ section::after {
     border-radius: 10px;
     z-index: 10;
     box-shadow: inset 5px 5px 0 rgba(0, 0, 0 ,0.3),
-                0 0 0 10px #4D9316;
+                0 0 0 30px #4D9316;
 }
 
 .apple {
@@ -63,119 +61,135 @@ section::after {
     border-radius: 50%;
     background: crimson;
     font-size: 20px;
-    filter: drop-shadow(2px 2px 0 rgba(0, 0, 0 ,0.3));
 
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-/*.apple::before {*/
-/*    content: "";*/
-/*    position: absolute;*/
+.apple::before {
+    content: "";
+    position: absolute;
 
-/*    width: 2px;*/
-/*    height: 6px;*/
-/*    background: brown;*/
-/*    top: -6px;*/
-/*    left: 9px;*/
-/*}*/
+    width: 2px;
+    height: 6px;
+    background: brown;
+    top: -6px;
+    left: 9px;
+}
 
-/*.apple::after {*/
-/*    content: "";*/
-/*    position: absolute;*/
+.apple::after {
+    content: "";
+    position: absolute;
 
-/*    border-radius: 50%;*/
-/*    width: 10px;*/
-/*    height: 5px;*/
-/*    background: darkgreen;*/
-/*    top: -5px;*/
-/*    left: 9px;*/
-/*}*/
+    border-radius: 50%;
+    width: 10px;
+    height: 5px;
+    background: darkgreen;
+    top: -5px;
+    left: 9px;
+}
 
-.snake_head {
+.game_field > * {
+    filter: drop-shadow(3px 3px 0 rgba(0, 0, 0 ,0.3));
+}
+
+.snake {
     position: absolute;
     display: block;
     top: 0;
     left: 0;
     width: 20px;
     height: 20px;
-    z-index: 10;
 
-    border-radius: 30% 50% 50% 30%;
     background: #DB6B24;
-
     transition-timing-function: linear;
+    transform: translateX(-40px);
+}
+
+.snake_head {
+    border-radius: 30% 50% 50% 30%;
+    z-index: 10;
 }
 
 .snake_segment {
+    border-radius: 50%;
+    z-index: 5;
+}
+
+.snake_segment::before {
+    content: "";
     position: absolute;
-    display: block;
     top: 0;
-    left: 0;
+    right: -10px;
+
     width: 20px;
     height: 20px;
-    z-index: 10;
-
-    border-radius: 30% 30% 30% 30%;
-    background: #DB6B24;
-
-    transition-timing-function: linear;
+    border-radius: 50%;
+    background: #DB6B28;
 }
 
 .snake_tail {
-    position: absolute;
-    display: block;
-    top: 0;
-    left: 0;
-    width: 20px;
-    height: 20px;
-    z-index: 10;
-
-    border-radius: 50% 30% 30% 50%;
-    background: #DB6B24;
-
-    transition-timing-function: linear;
+    border-radius: 50%;
+    top: 4px;
+    left: 4px;
+    width: 12px;
+    height: 12px;
 }
 
-/*.snake__head {*/
-/*    position: relative;*/
-/*    z-index: 10;*/
+.snake_tail::before {
+    content: "";
+    position: absolute;
+    top: -2px;
+    left: 7px;
 
-/*    border: none;*/
-/*    border-radius: 0 50% 50% 0;*/
-/*    background: #DB6B24;    */
-/*}*/
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #DB6B24;
+}
 
-/*.snake__head::after {*/
-/*    content: "";*/
-/*    position: absolute;*/
-/*    top: -5px;*/
-/*    left: -5px;*/
+.snake_tail::after {
+    content: "";
+    position: absolute;
+    top: 2px;
+    left: -4px;
 
-/*    width: 10px;*/
-/*    height: 10px;*/
-/*    border-radius: 50%;*/
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #DB6B24;
+}
 
-/*    box-shadow: inset 4px 0 0 white;*/
-/*    border: 3px solid #DB6B24;*/
-/*    background: black ;*/
-/*}*/
+.snake_head::after {
+    content: "";
+    position: absolute;
+    top: -5px;
+    left: -5px;
 
-/*.snake__head::before {*/
-/*    content: "";*/
-/*    position: absolute;*/
-/*    bottom: -5px;*/
-/*    left: -5px;*/
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
 
-/*    width: 10px;*/
-/*    height: 10px;*/
-/*    border-radius: 50%;*/
+    box-shadow: inset 4px 0 0 white;
+    border: 3px solid #DB6B24;
+    background: black ;
+}
 
-/*    box-shadow: inset 4px 0 0 white;*/
-/*    border: 3px solid #DB6B24;*/
-/*    background: black ;*/
-/*}*/
+.snake_head::before {
+    content: "";
+    position: absolute;
+    bottom: -5px;
+    left: -5px;
+
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+
+    box-shadow: inset 4px 0 0 white;
+    border: 3px solid #DB6B24;
+    background: black ;
+}
 
 /*.snake__part--rotate_up {*/
 /*    transform: rotate(-90deg);*/

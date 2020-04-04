@@ -1,4 +1,4 @@
-let snakeSpeed = 250;
+let snakeSpeed = 200;
 let autoMove;
 let endGame = true;
 let nextStep = "right";
@@ -6,19 +6,17 @@ let currentStep = "right";
 let score = 0;
 
 let snakeBody = [[0, 0, 0, document.querySelector(".snake_tail")],
-    [1, 0, 0, document.querySelector("#s3")],
-    [2, 0, 0, document.querySelector("#s2")],
-    [3, 0, 0, document.querySelector("#s1")],
-    [4, 0, 0, document.querySelector(".snake_head")]];
+    [1, 0, 0, document.querySelector("#s0")],
+    [2, 0, 0, document.querySelector(".snake_head")]];
 
-const scoreBox = document.querySelector("#actualScore");
 const startPauseBtn = document.querySelector("#btnStart");
 const fieldSizeX = Math.floor(document.documentElement.clientWidth / 20) - 2;
 const fieldSizeY = Math.floor(document.documentElement.clientHeight / 20) - 4;
 const gameField = document.querySelector(".game_field");
+const snakeWrapper = gameField.querySelector(".snake_wrapper");
 
 let apple = [0, 0, document.createElement("div")];
-apple[2].classList = "apple";
+apple[2].classList.add("apple");
 
 //---------ANIMATION SPEED --------------
 document.querySelectorAll(".snake").forEach((segment) => segment.style.transitionDuration = `${snakeSpeed}ms`);
@@ -53,17 +51,15 @@ document.addEventListener("keydown", function (event) {
     }
 });
 
-document.addEventListener('touchstart', handleTouchStart, false);
-document.addEventListener('touchmove', handleTouchMove, false);
 let xDown = null;
 let yDown = null;
 
-function handleTouchStart(evt) {
+const handleTouchStart = evt => {
     xDown = evt.touches[0].clientX;
     yDown = evt.touches[0].clientY;
-}
+};
 
-function handleTouchMove(evt) {
+const handleTouchMove = evt => {
     if (!xDown || !yDown) {
         return;
     }
@@ -89,11 +85,14 @@ function handleTouchMove(evt) {
     /* reset values */
     xDown = null;
     yDown = null;
-}
+};
+
+document.addEventListener('touchstart', handleTouchStart, false);
+document.addEventListener('touchmove', handleTouchMove, false);
 // --------NAVIGATION SECTION END----------//
 
 startPauseBtn.addEventListener("click", () => {
-    if (!endGame) {
+    if (endGame) {
         endGame = false;
         launchSnake();
         startPauseBtn.classList.add("paused")
@@ -131,6 +130,15 @@ const eatApple = () => {
         createApple();
         score++;
         console.log("OMNOM", score);
+
+        let snakeSegment = snakeBody[0].slice();
+        snakeSegment[3] = snakeBody[1][3].cloneNode(true);
+        snakeSegment[3].classList = "snake snake_segment";
+        snakeSegment[3].style.transform = `translateX(${snakeSegment[0] * 20}px) translateY(${snakeSegment[1] * 20}px) rotate(${snakeSegment[2]}deg)`;
+        snakeSegment[3].id = `s${score}`;
+
+        snakeBody.splice(1, 0, snakeSegment);
+        snakeWrapper.insertBefore(snakeSegment[3], snakeWrapper.querySelector(".snake_tail"));
     }
 };
 
@@ -157,6 +165,8 @@ const snakeMove = (posX, posY, rotation) => {
         }
         segment[3].style.transform = `translateX(${segment[0] * 20}px) translateY(${segment[1] * 20}px) rotate(${segment[2]}deg)`;
     });
+
+
 };
 
 const snakeStep = (direction, segment) => {
@@ -196,9 +206,9 @@ const snakeStep = (direction, segment) => {
 
 const launchSnake = () => {
     autoMove = setInterval(() => {
+        eatApple();
         snakeStep(currentStep, snakeBody.length - 1);
         currentStep = nextStep;
-        eatApple();
         // console.log(snakeBody);
     }, snakeSpeed);
 };
