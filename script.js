@@ -1,25 +1,19 @@
-let snakeSpeed = 200;
-let autoMove;
+let score;
+let snakeSpeed;
 let endGame = true;
-let nextStep = "right";
-let currentStep = "right";
-let score = 0;
 
-let snakeBody = [[0, 0, 0, document.querySelector(".snake_tail")],
-    [1, 0, 0, document.querySelector("#s0")],
-    [2, 0, 0, document.querySelector(".snake_head")]];
+let autoMove;
+
+let nextStep;
+let currentStep;
+let snakeBody;
+let apple;
 
 const startPauseBtn = document.querySelector("#btnStart");
 const fieldSizeX = Math.floor(document.documentElement.clientWidth / 20) - 2;
 const fieldSizeY = Math.floor(document.documentElement.clientHeight / 20) - 4;
 const gameField = document.querySelector(".game_field");
 const snakeWrapper = gameField.querySelector(".snake_wrapper");
-
-let apple = [0, 0, document.createElement("div")];
-apple[2].classList.add("apple");
-
-//---------ANIMATION SPEED --------------
-document.querySelectorAll(".snake").forEach((segment) => segment.style.transitionDuration = `${snakeSpeed}ms`);
 
 // --------NAVIGATION SECTION ----------
 document.addEventListener("keydown", function (event) {
@@ -93,13 +87,22 @@ document.addEventListener('touchmove', handleTouchMove, false);
 
 startPauseBtn.addEventListener("click", () => {
     if (endGame) {
+        score = 0;
         endGame = false;
+        snakeSpeed = 250;
+        nextStep = "right";
+        currentStep = "right";
+        createSnake();
+        launchSnake();
+        startPauseBtn.classList.add("paused")
+    } else if (!endGame && !snakeSpeed) {
+        snakeSpeed = 250;
         launchSnake();
         startPauseBtn.classList.add("paused")
     } else {
         clearInterval(autoMove);
+        snakeSpeed = null;
         startPauseBtn.classList.remove("paused");
-        endGame = true;
     }
 });
 
@@ -115,6 +118,9 @@ const createField = () => {
 };
 
 const createApple = () => {
+    apple = [0, 0, document.createElement("div")];
+    apple[2].classList.add("apple");
+
     apple[0] = getRandom(0, fieldSizeX);
     apple[1] = getRandom(0, fieldSizeY);
 
@@ -124,56 +130,89 @@ const createApple = () => {
     gameField.append(apple[2]);
 };
 
+const createSnake = () => {
+    const snakeHead = document.createElement("div");
+    snakeHead.classList = "snake snake_head";
+    const snakeSegment = document.createElement("div");
+    snakeSegment.classList = "snake snake_segment";
+    snakeSegment.id = "s0";
+    const snakeTail = document.createElement("div");
+    snakeTail.classList = "snake snake_tail";
+
+    snakeBody = [[0, 0, 0, snakeTail],
+        [1, 0, 0, snakeSegment],
+        [2, 0, 0, snakeHead]];
+
+//---------ANIMATION SPEED --------------
+    snakeBody.forEach((segment) => segment[3].style.transitionDuration = `${snakeSpeed}ms`);
+
+    snakeWrapper.append(snakeTail);
+    snakeWrapper.append(snakeSegment);
+    snakeWrapper.append(snakeHead);
+
+
+};
+
 const eatApple = () => {
-    if (snakeBody[snakeBody.length - 1][0] === apple[0] &&
-        snakeBody[snakeBody.length - 1][1] === apple[1]) {
-        createApple();
-        score++;
-        console.log("OMNONOM", score);
+    let snakeSegment = snakeBody[0].slice();
+    snakeSegment[3] = snakeBody[1][3].cloneNode(true);
+    snakeSegment[3].classList = "snake snake_segment";
+    snakeSegment[3].style.transform = `translateX(${snakeSegment[0] * 20}px) translateY(${snakeSegment[1] * 20}px) rotate(${snakeSegment[2]}deg)`;
+    snakeSegment[3].id = `s${score}`;
 
-        let snakeSegment = snakeBody[0].slice();
-        snakeSegment[3] = snakeBody[1][3].cloneNode(true);
-        snakeSegment[3].classList = "snake snake_segment";
-        snakeSegment[3].style.transform = `translateX(${snakeSegment[0] * 20}px) translateY(${snakeSegment[1] * 20}px) rotate(${snakeSegment[2]}deg)`;
-        snakeSegment[3].id = `s${score}`;
+    const snakeTail = snakeWrapper.querySelector(".snake_tail");
+    snakeBody.splice(1, 0, snakeSegment);
+    snakeWrapper.insertBefore(snakeSegment[3], snakeTail);
 
-        snakeBody.splice(1, 0, snakeSegment);
-        snakeWrapper.insertBefore(snakeSegment[3], snakeWrapper.querySelector(".snake_tail"));
-    }
+    gameField.querySelector(".apple").remove();
+    createApple();
+
+    score++;
+    console.log("OMNONOM", score);
 };
 
 const posCheck = (step, coord) => {
-    if (coord === "Y") {
-        snakeBody.forEach( (segment) => {
-            //if Y coordinates match check X coordinates and return if it matches
-            step === segment[1] && segment[0] === snakeBody[snakeBody.length - 1][0] && console.log("Eat itself Y coordinates");
-        });
-        if (step > fieldSizeY - 1) {
-            console.log("Hits bottom wall coordinates");
-            return 0;
-        } else if (step < 0) {
-            console.log("Hits top wall coordinates");
-            return fieldSizeY - 1;
-        } else {
-            return step;
+    let snakeHead = snakeBody[snakeBody.length - 1];
+    switch (coord) {
+        case "Y" : {
+            snakeBody.forEach((segment) => {
+                //if Y coordinates match check X coordinates and return if it matches
+                step === segment[1] && segment[0] === snakeHead[0] && gameOver();
+            });
+            if (step === apple[1] && snakeHead[0] === apple[0]) {
+                eatApple();
+                return step;
+            } else if (step > fieldSizeY - 1) {
+                gameOver();
+                break;
+            } else if (step < 0) {
+                gameOver();
+                break;
+            } else {
+                return step;
+            }
         }
-    }
-    if (coord === "X") {
-        snakeBody.forEach( (segment) => {
-            //if Y coordinates match check X coordinates and return if it matches
-            step === segment[0] && segment[1] === snakeBody[snakeBody.length - 1][1] && console.log("Eat itself X coordinates");
-        });
-        if (step > fieldSizeX - 1) {
-            console.log("Hits right wall coordinates");
-            return 0;
-        } else if (step < 0) {
-            console.log("Hits left wall coordinates");
-            return fieldSizeX - 1;
-        } else {
-            return step;
+        case "X" : {
+            snakeBody.forEach((segment) => {
+                //if Y coordinates match check X coordinates and return if it matches
+                step === segment[0] && segment[1] === snakeHead[1] && gameOver();
+            });
+            if (step === apple[0] && snakeHead[1] === apple[1]) {
+                eatApple();
+                return step;
+            } else if (step > fieldSizeX - 1) {
+                gameOver();
+                break;
+            } else if (step < 0) {
+                gameOver();
+                break;
+            } else {
+                return step;
+            }
         }
+        default:
+            return step;
     }
-
 };
 
 const snakeMove = (posX, posY, rotation) => {
@@ -197,38 +236,42 @@ const snakeStep = (direction, segment) => {
     switch (direction) {
         case "up" : {
             posY = posCheck(--posY, "Y");
-            if (nextStep === "right") rotation += 90;
-            if (nextStep === "left") rotation -= 90;
+            //if next steep === right turn +90 deg of current rotation else if next steep === left turn - 90 deg
+            nextStep === "right" ? rotation += 90 : nextStep === "left" ? rotation -= 90 : null;
             snakeMove(posX, posY, rotation);
             break;
         }
         case "down" : {
             posY = posCheck(++posY, "Y");
-            if (nextStep === "right") rotation -= 90;
-            if (nextStep === "left") rotation += 90;
+            nextStep === "right" ? rotation -= 90 : nextStep === "left" ? rotation += 90 : null;
             snakeMove(posX, posY, rotation);
             break;
         }
         case "left" : {
             posX = posCheck(--posX, "X");
-            if (nextStep === "down") rotation -= 90;
-            if (nextStep === "up") rotation += 90;
+            nextStep === "down" ? rotation -= 90 : nextStep === "up" ? rotation += 90 : null;
             snakeMove(posX, posY, rotation);
             break;
         }
         case "right" : {
             posX = posCheck(++posX, "X");
-            if (nextStep === "down") rotation += 90;
-            if (nextStep === "up") rotation -= 90;
+            nextStep === "down" ? rotation += 90 : nextStep === "up" ? rotation -= 90 : null;
             snakeMove(posX, posY, rotation);
             break;
         }
     }
 };
 
+const gameOver = () => {
+    startPauseBtn.classList.remove("paused");
+    clearInterval(autoMove);
+    snakeSpeed = null;
+    endGame = true;
+    snakeWrapper.innerHTML = null;
+};
+
 const launchSnake = () => {
     autoMove = setInterval(() => {
-        eatApple();
         snakeStep(currentStep, snakeBody.length - 1);
         currentStep = nextStep;
         // console.log(snakeBody);
