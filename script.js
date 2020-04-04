@@ -158,48 +158,31 @@ const eatApple = () => {
 
 const posCheck = (step, coordinate) => {
     let snakeHead = snakeBody[snakeBody.length - 1];
+    const handleCheck = (indexA, indexB, fieldSize) => {
+        snakeBody.forEach((segment) => {
+            //if Y coordinates match check X coordinates and return if it matches
+            step === segment[indexA] && segment[indexB] === snakeHead[indexB] && gameOver();
+        });
+        if (step === apple[indexA] && snakeHead[indexB] === apple[indexB]) {
+            eatApple();
+            createApple();
+            score++;
+            scoreBlock.textContent = score;
+            return step;
+        } else if (step > fieldSize - 1) {
+            gameOver();
+        } else if (step < 0) {
+            gameOver();
+        } else {
+            return step;
+        }
+    };
     switch (coordinate) {
         case "Y" : {
-            snakeBody.forEach((segment) => {
-                //if Y coordinates match check X coordinates and return if it matches
-                step === segment[1] && segment[0] === snakeHead[0] && gameOver();
-            });
-            if (step === apple[1] && snakeHead[0] === apple[0]) {
-                eatApple();
-                createApple();
-                score++;
-                scoreBlock.textContent = score;
-                return step;
-            } else if (step > fieldSizeY - 1) {
-                gameOver();
-                break;
-            } else if (step < 0) {
-                gameOver();
-                break;
-            } else {
-                return step;
-            }
+            return handleCheck(1, 0, fieldSizeY);
         }
         case "X" : {
-            snakeBody.forEach((segment) => {
-                //if Y coordinates match check X coordinates and return if it matches
-                step === segment[0] && segment[1] === snakeHead[1] && gameOver();
-            });
-            if (step === apple[0] && snakeHead[1] === apple[1]) {
-                eatApple();
-                createApple();
-                score++;
-                scoreBlock.textContent = score;
-                return step;
-            } else if (step > fieldSizeX - 1) {
-                gameOver();
-                break;
-            } else if (step < 0) {
-                gameOver();
-                break;
-            } else {
-                return step;
-            }
+            return handleCheck(0, 1, fieldSizeX);
         }
         default:
             return step;
@@ -275,4 +258,3 @@ const startGame = () => {
     createApple();
     setTimeout(() => launchSnake(), snakeSpeed );
 };
-
