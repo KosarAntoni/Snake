@@ -1,8 +1,6 @@
 let score = 0;
-let snakeSpeed;
+let snakeSpeed = 250;
 let endGame = true;
-
-let autoMove;
 
 let nextStep;
 let currentStep;
@@ -96,11 +94,11 @@ startPauseBtn.addEventListener("click", () => {
         startGame();
         startPauseBtn.classList.add("paused")
     } else if (!endGame && !snakeSpeed) {
-        snakeSpeed = 250;
+        snakeBody[snakeBody.length - 1][3].ontransitionend = () => launchSnake();
         launchSnake();
         startPauseBtn.classList.add("paused")
     } else {
-        clearInterval(autoMove);
+        snakeBody[snakeBody.length - 1][3].ontransitionend = null;
         snakeSpeed = null;
         startPauseBtn.classList.remove("paused");
     }
@@ -121,12 +119,13 @@ const createApple = () => {
 
 const createSnake = () => {
     const snakeHead = document.createElement("div");
-    snakeHead.classList = "snake snake_head";
+    snakeHead.classList.add("snake", "snake_head");
+    snakeHead.ontransitionend = () => launchSnake();
     const snakeSegment = document.createElement("div");
-    snakeSegment.classList = "snake snake_segment";
+    snakeSegment.classList.add("snake", "snake_segment");
     snakeSegment.id = "s0";
     const snakeTail = document.createElement("div");
-    snakeTail.classList = "snake snake_tail";
+    snakeTail.classList.add("snake", "snake_tail");
 
     snakeBody = [[0, 0, 0, snakeTail],
         [1, 0, 0, snakeSegment],
@@ -138,6 +137,7 @@ const createSnake = () => {
     snakeWrapper.append(snakeTail);
     snakeWrapper.append(snakeSegment);
     snakeWrapper.append(snakeHead);
+
 };
 
 const eatApple = () => {
@@ -158,9 +158,9 @@ const eatApple = () => {
     scoreBlock.textContent = score;
 };
 
-const posCheck = (step, coord) => {
+const posCheck = (step, coordinate) => {
     let snakeHead = snakeBody[snakeBody.length - 1];
-    switch (coord) {
+    switch (coordinate) {
         case "Y" : {
             snakeBody.forEach((segment) => {
                 //if Y coordinates match check X coordinates and return if it matches
@@ -251,7 +251,6 @@ const snakeStep = (direction, segment) => {
 
 const gameOver = () => {
     startPauseBtn.classList.remove("paused");
-    clearInterval(autoMove);
     snakeSpeed = null;
     endGame = true;
     snakeWrapper.innerHTML = null;
@@ -261,17 +260,15 @@ const gameOver = () => {
 const startGame = () => {
     score = 0;
     endGame = false;
-    snakeSpeed = 250;
     nextStep = "right";
     currentStep = "right";
     createSnake();
     createApple();
-    launchSnake();
+    setTimeout(() => launchSnake(), snakeSpeed);
 };
 
 const launchSnake = () => {
-    autoMove = setInterval(() => {
-        snakeStep(currentStep, snakeBody.length - 1);
-        currentStep = nextStep;
-    }, snakeSpeed);
+    snakeSpeed = 250;
+    snakeStep(currentStep, snakeBody.length - 1);
+    currentStep = nextStep;
 };
