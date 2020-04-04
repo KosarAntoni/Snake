@@ -121,15 +121,18 @@ const createSnake = () => {
     const snakeHead = document.createElement("div");
     snakeHead.classList.add("snake", "snake_head");
     snakeHead.ontransitionend = () => launchSnake();
+    snakeHead.style.transform = `translateX(-25px)`;
     const snakeSegment = document.createElement("div");
     snakeSegment.classList.add("snake", "snake_segment");
+    snakeSegment.style.transform = `translateX(-40px)`;
     snakeSegment.id = "s0";
     const snakeTail = document.createElement("div");
     snakeTail.classList.add("snake", "snake_tail");
+    snakeTail.style.transform = `translateX(-60px)`;
 
-    snakeBody = [[0, 0, 0, snakeTail],
-        [1, 0, 0, snakeSegment],
-        [2, 0, 0, snakeHead]];
+    snakeBody = [[-3, 0, 0, snakeTail],
+        [-2, 0, 0, snakeSegment],
+        [-1, 0, 0, snakeHead]];
 
 //---------ANIMATION SPEED --------------
     snakeBody.forEach((segment) => segment[3].style.transitionDuration = `${snakeSpeed}ms`);
@@ -137,7 +140,6 @@ const createSnake = () => {
     snakeWrapper.append(snakeTail);
     snakeWrapper.append(snakeSegment);
     snakeWrapper.append(snakeHead);
-
 };
 
 const eatApple = () => {
@@ -152,10 +154,6 @@ const eatApple = () => {
     snakeWrapper.insertBefore(snakeSegment[3], snakeTail);
 
     apple[2].remove();
-    createApple();
-
-    score++;
-    scoreBlock.textContent = score;
 };
 
 const posCheck = (step, coordinate) => {
@@ -168,6 +166,9 @@ const posCheck = (step, coordinate) => {
             });
             if (step === apple[1] && snakeHead[0] === apple[0]) {
                 eatApple();
+                createApple();
+                score++;
+                scoreBlock.textContent = score;
                 return step;
             } else if (step > fieldSizeY - 1) {
                 gameOver();
@@ -186,6 +187,9 @@ const posCheck = (step, coordinate) => {
             });
             if (step === apple[0] && snakeHead[1] === apple[1]) {
                 eatApple();
+                createApple();
+                score++;
+                scoreBlock.textContent = score;
                 return step;
             } else if (step > fieldSizeX - 1) {
                 gameOver();
@@ -251,10 +255,15 @@ const snakeStep = (direction, segment) => {
 
 const gameOver = () => {
     startPauseBtn.classList.remove("paused");
-    snakeSpeed = null;
     endGame = true;
     snakeWrapper.innerHTML = null;
     apple[2].remove();
+};
+
+const launchSnake = () => {
+    snakeSpeed = 250;
+    snakeStep(currentStep, snakeBody.length - 1);
+    currentStep = nextStep;
 };
 
 const startGame = () => {
@@ -264,11 +273,6 @@ const startGame = () => {
     currentStep = "right";
     createSnake();
     createApple();
-    setTimeout(() => launchSnake(), snakeSpeed);
+    setTimeout(() => launchSnake(), snakeSpeed );
 };
 
-const launchSnake = () => {
-    snakeSpeed = 250;
-    snakeStep(currentStep, snakeBody.length - 1);
-    currentStep = nextStep;
-};

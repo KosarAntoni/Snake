@@ -104,7 +104,6 @@ section::after {
 
     background: #DB6B24;
     transition-timing-function: linear;
-    transform: translateX(-40px);
 }
 
 .snake_head {
