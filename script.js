@@ -129,7 +129,7 @@ const eatApple = () => {
         snakeBody[snakeBody.length - 1][1] === apple[1]) {
         createApple();
         score++;
-        console.log("OMNOM", score);
+        console.log("OMNONOM", score);
 
         let snakeSegment = snakeBody[0].slice();
         snakeSegment[3] = snakeBody[1][3].cloneNode(true);
@@ -142,14 +142,38 @@ const eatApple = () => {
     }
 };
 
-const posCheck = (step, fieldSize) => {
-    if (step > fieldSize - 1) {
-        return 0;
-    } else if (step < 0) {
-        return fieldSize - 1;
-    } else {
-        return step;
+const posCheck = (step, coord) => {
+    if (coord === "Y") {
+        snakeBody.forEach( (segment) => {
+            //if Y coordinates match check X coordinates and return if it matches
+            step === segment[1] && segment[0] === snakeBody[snakeBody.length - 1][0] && console.log("Eat itself Y coordinates");
+        });
+        if (step > fieldSizeY - 1) {
+            console.log("Hits bottom wall coordinates");
+            return 0;
+        } else if (step < 0) {
+            console.log("Hits top wall coordinates");
+            return fieldSizeY - 1;
+        } else {
+            return step;
+        }
     }
+    if (coord === "X") {
+        snakeBody.forEach( (segment) => {
+            //if Y coordinates match check X coordinates and return if it matches
+            step === segment[0] && segment[1] === snakeBody[snakeBody.length - 1][1] && console.log("Eat itself X coordinates");
+        });
+        if (step > fieldSizeX - 1) {
+            console.log("Hits right wall coordinates");
+            return 0;
+        } else if (step < 0) {
+            console.log("Hits left wall coordinates");
+            return fieldSizeX - 1;
+        } else {
+            return step;
+        }
+    }
+
 };
 
 const snakeMove = (posX, posY, rotation) => {
@@ -165,8 +189,6 @@ const snakeMove = (posX, posY, rotation) => {
         }
         segment[3].style.transform = `translateX(${segment[0] * 20}px) translateY(${segment[1] * 20}px) rotate(${segment[2]}deg)`;
     });
-
-
 };
 
 const snakeStep = (direction, segment) => {
@@ -174,28 +196,28 @@ const snakeStep = (direction, segment) => {
 
     switch (direction) {
         case "up" : {
-            posY = posCheck(--posY, fieldSizeY);
+            posY = posCheck(--posY, "Y");
             if (nextStep === "right") rotation += 90;
             if (nextStep === "left") rotation -= 90;
             snakeMove(posX, posY, rotation);
             break;
         }
         case "down" : {
-            posY = posCheck(++posY, fieldSizeY);
+            posY = posCheck(++posY, "Y");
             if (nextStep === "right") rotation -= 90;
             if (nextStep === "left") rotation += 90;
             snakeMove(posX, posY, rotation);
             break;
         }
         case "left" : {
-            posX = posCheck(--posX, fieldSizeX);
+            posX = posCheck(--posX, "X");
             if (nextStep === "down") rotation -= 90;
             if (nextStep === "up") rotation += 90;
             snakeMove(posX, posY, rotation);
             break;
         }
         case "right" : {
-            posX = posCheck(++posX, fieldSizeX);
+            posX = posCheck(++posX, "X");
             if (nextStep === "down") rotation += 90;
             if (nextStep === "up") rotation -= 90;
             snakeMove(posX, posY, rotation);
