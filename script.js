@@ -1,4 +1,4 @@
-let score;
+let score = 0;
 let snakeSpeed;
 let endGame = true;
 
@@ -9,11 +9,17 @@ let currentStep;
 let snakeBody;
 let apple;
 
-const startPauseBtn = document.querySelector("#btnStart");
+// --------INITIALIZE GAME FIELD----------
 const fieldSizeX = Math.floor(document.documentElement.clientWidth / 20) - 2;
 const fieldSizeY = Math.floor(document.documentElement.clientHeight / 20) - 4;
 const gameField = document.querySelector(".game_field");
+gameField.style.width = `${fieldSizeX * 20}px`;
+gameField.style.height = `${fieldSizeY * 20}px`;
+// --------INITIALIZE GAME FIELD----------
+
+const startPauseBtn = document.querySelector("#btnStart");
 const snakeWrapper = gameField.querySelector(".snake_wrapper");
+let scoreBlock = document.querySelector("#actualScore");
 
 // --------NAVIGATION SECTION ----------
 document.addEventListener("keydown", function (event) {
@@ -87,13 +93,7 @@ document.addEventListener('touchmove', handleTouchMove, false);
 
 startPauseBtn.addEventListener("click", () => {
     if (endGame) {
-        score = 0;
-        endGame = false;
-        snakeSpeed = 250;
-        nextStep = "right";
-        currentStep = "right";
-        createSnake();
-        launchSnake();
+        startGame();
         startPauseBtn.classList.add("paused")
     } else if (!endGame && !snakeSpeed) {
         snakeSpeed = 250;
@@ -106,23 +106,12 @@ startPauseBtn.addEventListener("click", () => {
     }
 });
 
-const getRandom = (min, max) => {
-    min = Math.ceil(min);
-    max = Math.floor(max);
-    return Math.floor(Math.random() * (max - min)) + min;
-};
-
-const createField = () => {
-    gameField.style.width = `${fieldSizeX * 20}px`;
-    gameField.style.height = `${fieldSizeY * 20}px`;
-};
-
 const createApple = () => {
     apple = [0, 0, document.createElement("div")];
     apple[2].classList.add("apple");
 
-    apple[0] = getRandom(0, fieldSizeX);
-    apple[1] = getRandom(0, fieldSizeY);
+    apple[0] = Math.floor(Math.random() * fieldSizeX);
+    apple[1] = Math.floor(Math.random() * fieldSizeY);
 
     apple[2].style.left = `${apple[0] * 20}px`;
     apple[2].style.top = `${apple[1] * 20}px`;
@@ -149,8 +138,6 @@ const createSnake = () => {
     snakeWrapper.append(snakeTail);
     snakeWrapper.append(snakeSegment);
     snakeWrapper.append(snakeHead);
-
-
 };
 
 const eatApple = () => {
@@ -164,11 +151,11 @@ const eatApple = () => {
     snakeBody.splice(1, 0, snakeSegment);
     snakeWrapper.insertBefore(snakeSegment[3], snakeTail);
 
-    gameField.querySelector(".apple").remove();
+    apple[2].remove();
     createApple();
 
     score++;
-    console.log("OMNONOM", score);
+    scoreBlock.textContent = score;
 };
 
 const posCheck = (step, coord) => {
@@ -268,15 +255,23 @@ const gameOver = () => {
     snakeSpeed = null;
     endGame = true;
     snakeWrapper.innerHTML = null;
+    apple[2].remove();
+};
+
+const startGame = () => {
+    score = 0;
+    endGame = false;
+    snakeSpeed = 250;
+    nextStep = "right";
+    currentStep = "right";
+    createSnake();
+    createApple();
+    launchSnake();
 };
 
 const launchSnake = () => {
     autoMove = setInterval(() => {
         snakeStep(currentStep, snakeBody.length - 1);
         currentStep = nextStep;
-        // console.log(snakeBody);
     }, snakeSpeed);
 };
-
-createField();
-createApple();
