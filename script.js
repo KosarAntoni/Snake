@@ -1,297 +1,277 @@
-let snake = [];
-let autoMove;
-let endGame = true;
-let tmpDirection = "right";
-let lastDirection = "right";
-let crntDirection = "right";
 let score = 0;
-let scoreBox = document.querySelector("#actualScore");
-let startPauseBtn = document.getElementById("btnStart");
-let fieldSizeX = Math.floor(document.documentElement.clientWidth / 20) - 2;
-let fieldSizeY = Math.floor(document.documentElement.clientHeight / 20) - 4;
+let snakeSpeed;
+let endGame = true;
 
-document.addEventListener("keydown", function(event) {
-    switch(event.code) {
+let autoMove;
+
+let nextStep;
+let currentStep;
+let snakeBody;
+let apple;
+
+// --------INITIALIZE GAME FIELD----------
+const fieldSizeX = Math.floor(document.documentElement.clientWidth / 20) - 2;
+const fieldSizeY = Math.floor(document.documentElement.clientHeight / 20) - 4;
+const gameField = document.querySelector(".game_field");
+gameField.style.width = `${fieldSizeX * 20}px`;
+gameField.style.height = `${fieldSizeY * 20}px`;
+// --------INITIALIZE GAME FIELD----------
+
+const startPauseBtn = document.querySelector("#btnStart");
+const snakeWrapper = gameField.querySelector(".snake_wrapper");
+let scoreBlock = document.querySelector("#actualScore");
+
+// --------NAVIGATION SECTION ----------
+document.addEventListener("keydown", function (event) {
+    switch (event.code) {
         case "ArrowUp" : {
-            if (crntDirection != "down") {
-                tmpDirection = "up";
+            if (currentStep !== "down") {
+                nextStep = "up";
             }
             break;
-        };
+        }
         case "ArrowDown" : {
-            if (crntDirection != "up") {
-                tmpDirection = "down";
+            if (currentStep !== "up") {
+                nextStep = "down";
             }
             break;
-        };
+        }
         case "ArrowLeft" : {
-            if (crntDirection != "right") {
-                tmpDirection = "left";
+            if (currentStep !== "right") {
+                nextStep = "left";
             }
             break;
-        };
+        }
         case "ArrowRight" : {
-            if (crntDirection != "left") {
-                tmpDirection = "right";
+            if (currentStep !== "left") {
+                nextStep = "right";
             }
             break;
         }
     }
-})
+});
 
-document.addEventListener('touchstart', handleTouchStart, false);        
-document.addEventListener('touchmove', handleTouchMove, false);
-let xDown = null;                                                        
-let yDown = null;                                                        
-function handleTouchStart(evt) {                                         
-    xDown = evt.touches[0].clientX;                                      
-    yDown = evt.touches[0].clientY;                                      
-};   
+let xDown = null;
+let yDown = null;
 
-function handleTouchMove(evt) {
-    if ( ! xDown || ! yDown ) {
+const handleTouchStart = evt => {
+    xDown = evt.touches[0].clientX;
+    yDown = evt.touches[0].clientY;
+};
+
+const handleTouchMove = evt => {
+    if (!xDown || !yDown) {
         return;
     }
 
-    let xUp = evt.touches[0].clientX;                                    
+    let xUp = evt.touches[0].clientX;
     let yUp = evt.touches[0].clientY;
 
     let xDiff = xDown - xUp;
     let yDiff = yDown - yUp;
-    if ( Math.abs( xDiff ) > Math.abs( yDiff ) ) {/*most significant*/
-            if(xDiff > 0 && crntDirection != "right") {
-                tmpDirection = "left";
-            }
-            else if(xDiff < 0 && crntDirection != "left") {
-                tmpDirection = "right";
-            }                      
+    if (Math.abs(xDiff) > Math.abs(yDiff)) {/*most significant*/
+        if (xDiff > 0 && currentStep !== "right") {
+            nextStep = "left";
+        } else if (xDiff < 0 && currentStep !== "left") {
+            nextStep = "right";
+        }
     } else {
-            if(yDiff < 0 && crntDirection != "up") {
-                tmpDirection = "down";
-            }
-            else if(yDiff > 0 && crntDirection != "down") {
-                tmpDirection = "up";
-            }                                                               
+        if (yDiff < 0 && currentStep !== "up") {
+            nextStep = "down";
+        } else if (yDiff > 0 && currentStep !== "down") {
+            nextStep = "up";
+        }
     }
     /* reset values */
     xDown = null;
     yDown = null;
 };
 
-startPauseBtn.addEventListener("click", function() {
-    if (endGame == true) {
-        endGame = false;
-        createSnake();
+document.addEventListener('touchstart', handleTouchStart, false);
+document.addEventListener('touchmove', handleTouchMove, false);
+// --------NAVIGATION SECTION END----------//
+
+startPauseBtn.addEventListener("click", () => {
+    if (endGame) {
+        startGame();
+        startPauseBtn.classList.add("paused")
+    } else if (!endGame && !snakeSpeed) {
+        snakeSpeed = 250;
         launchSnake();
         startPauseBtn.classList.add("paused")
     } else {
         clearInterval(autoMove);
-        startPauseBtn.classList.remove("paused")
-        endGame = true;
+        snakeSpeed = null;
+        startPauseBtn.classList.remove("paused");
     }
 });
 
-function getRandom(min, max) {
-    min = Math.ceil(min);
-    max = Math.floor(max);
-    return Math.floor(Math.random() * (max - min)) + min;
-}
+const createApple = () => {
+    apple = [0, 0, document.createElement("div")];
+    apple[2].classList.add("apple");
 
-function launchSnake() {
-    autoMove = setInterval(function step() {
-        snakeMove(crntDirection);
-        crntDirection = tmpDirection;
-    }, 200);
-}
+    apple[0] = Math.floor(Math.random() * fieldSizeX);
+    apple[1] = Math.floor(Math.random() * fieldSizeY);
 
-function eatItself(pos) {
-    if (pos.classList.contains("snake") ) {  
-        clearInterval(autoMove);    
-        for(let part of snake) {
-            part.classList.remove("snake", 
-                                  "snake__head",
-                                  "snake__tail", 
-                                  "snake__part--rotate_up", 
-                                  "snake__part--rotate_down", 
-                                  "snake__part--rotate_left",
-                                  "snake__part--rotate_right",
-                                  "snake__twist--right",
-                                  "snake__twist--left");
+    apple[2].style.left = `${apple[0] * 20}px`;
+    apple[2].style.top = `${apple[1] * 20}px`;
+
+    gameField.append(apple[2]);
+};
+
+const createSnake = () => {
+    const snakeHead = document.createElement("div");
+    snakeHead.classList = "snake snake_head";
+    const snakeSegment = document.createElement("div");
+    snakeSegment.classList = "snake snake_segment";
+    snakeSegment.id = "s0";
+    const snakeTail = document.createElement("div");
+    snakeTail.classList = "snake snake_tail";
+
+    snakeBody = [[0, 0, 0, snakeTail],
+        [1, 0, 0, snakeSegment],
+        [2, 0, 0, snakeHead]];
+
+//---------ANIMATION SPEED --------------
+    snakeBody.forEach((segment) => segment[3].style.transitionDuration = `${snakeSpeed}ms`);
+
+    snakeWrapper.append(snakeTail);
+    snakeWrapper.append(snakeSegment);
+    snakeWrapper.append(snakeHead);
+};
+
+const eatApple = () => {
+    let snakeSegment = snakeBody[0].slice();
+    snakeSegment[3] = snakeBody[1][3].cloneNode(true);
+    snakeSegment[3].classList = "snake snake_segment";
+    snakeSegment[3].style.transform = `translateX(${snakeSegment[0] * 20}px) translateY(${snakeSegment[1] * 20}px) rotate(${snakeSegment[2]}deg)`;
+    snakeSegment[3].id = `s${score}`;
+
+    const snakeTail = snakeWrapper.querySelector(".snake_tail");
+    snakeBody.splice(1, 0, snakeSegment);
+    snakeWrapper.insertBefore(snakeSegment[3], snakeTail);
+
+    apple[2].remove();
+    createApple();
+
+    score++;
+    scoreBlock.textContent = score;
+};
+
+const posCheck = (step, coord) => {
+    let snakeHead = snakeBody[snakeBody.length - 1];
+    switch (coord) {
+        case "Y" : {
+            snakeBody.forEach((segment) => {
+                //if Y coordinates match check X coordinates and return if it matches
+                step === segment[1] && segment[0] === snakeHead[0] && gameOver();
+            });
+            if (step === apple[1] && snakeHead[0] === apple[0]) {
+                eatApple();
+                return step;
+            } else if (step > fieldSizeY - 1) {
+                gameOver();
+                break;
+            } else if (step < 0) {
+                gameOver();
+                break;
+            } else {
+                return step;
+            }
         }
-        endGame = true;
-        score = 0;
-        scoreBox.textContent = score; 
-        startPauseBtn.classList.remove("paused");
-        snake = [];
-        tmpDirection = "right";
-        lastDirection = "right";
-        crntDirection = "right";
-    }    
-}
-
-function addApple() {
-    let appleField = document.getElementById(`${getRandom(0, fieldSizeY)}_${getRandom(0, fieldSizeX)}`);
-    if (appleField.classList.contains("snake")) {
-        appleField = addApple(); 
-    }
-    appleField.classList.add("apple");
-    return appleField;
-}
-
-function eatApple(pos) {
-    if (pos.classList.contains("apple")) {
-        pos.classList.remove("apple");
-        addApple();
-        score++;
-        scoreBox.textContent = score;
-        return "nomnom"
-    }
-}
-
-function createField() {
-    let gameField = document.querySelector(".game__field");
-    let scoreField = document.querySelector(".status");
-    scoreField.style.width = `${fieldSizeX * 20}px`;
-    gameField.style.width = `${fieldSizeX * 20}px`;
-    gameField.style.height = `${fieldSizeY * 20}px`;
-    
-    for (let y = 0; y < fieldSizeY; y++) {
-        let tmpId = y + "_";
-        for (let x = 0; x < fieldSizeX; x++) {
-            let id = tmpId + x;
-            let fieldBox = document.createElement("div");
-            fieldBox.classList.add("square");
-            fieldBox.setAttribute("id", id);
-            gameField.append(fieldBox);
+        case "X" : {
+            snakeBody.forEach((segment) => {
+                //if Y coordinates match check X coordinates and return if it matches
+                step === segment[0] && segment[1] === snakeHead[1] && gameOver();
+            });
+            if (step === apple[0] && snakeHead[1] === apple[1]) {
+                eatApple();
+                return step;
+            } else if (step > fieldSizeX - 1) {
+                gameOver();
+                break;
+            } else if (step < 0) {
+                gameOver();
+                break;
+            } else {
+                return step;
+            }
         }
+        default:
+            return step;
     }
-}
+};
 
-function createSnake() {
-    if (snake.length == 0) {
-        crntDirection = "right";
-        snake = [
-            document.getElementById("3_5"),
-            document.getElementById("3_4"),
-            document.getElementById("3_3"),
-            document.getElementById("3_2"),
-            document.getElementById("3_1")
-        ];
-    }
-    for (let snakePart of snake) {
-        snakePart.classList.add("snake"); 
-    }
-    snake[0].classList.add("snake__head");
-    if (crntDirection == "up") snake[0].classList.add("snake__part--rotate_up");
-    if (crntDirection == "down") snake[0].classList.add("snake__part--rotate_down");
-    if (crntDirection == "left") snake[0].classList.add("snake__part--rotate_left");
-    if (crntDirection == "right") snake[0].classList.add("snake__part--rotate_right");
-    snake[1].classList.remove("snake__head");
+const snakeMove = (posX, posY, rotation) => {
+    snakeBody.forEach((segment, i) => {
+        if (i === snakeBody.length - 1) {
+            segment[0] = posX;
+            segment[1] = posY;
+            segment[2] = rotation;
+        } else if (i < snakeBody.length - 1) {
+            segment[0] = snakeBody[i + 1][0];
+            segment[1] = snakeBody[i + 1][1];
+            segment[2] = snakeBody[i + 1][2];
+        }
+        segment[3].style.transform = `translateX(${segment[0] * 20}px) translateY(${segment[1] * 20}px) rotate(${segment[2]}deg)`;
+    });
+};
 
-    if (lastDirection == "right" && crntDirection == "down" || 
-        lastDirection == "down" && crntDirection == "left" ||
-        lastDirection == "left" && crntDirection == "up" ||
-        lastDirection == "up" && crntDirection == "right") snake[1].classList.add("snake__twist--right");
+const snakeStep = (direction, segment) => {
+    let [posX, posY, rotation] = snakeBody[segment];
 
-    if (lastDirection == "right" && crntDirection == "up" || 
-        lastDirection == "up" && crntDirection == "left" ||
-        lastDirection == "left" && crntDirection == "down" ||
-        lastDirection == "down" && crntDirection == "right") snake[1].classList.add("snake__twist--left");
-
-    if (snake[snake.length - 2].classList.contains("snake__part--rotate_up")) {
-        snake[snake.length - 1].classList.remove("snake__part--rotate_up", 
-                                                 "snake__part--rotate_down", 
-                                                 "snake__part--rotate_left");
-        snake[snake.length - 1].classList.add("snake__part--rotate_up");
-    }
-    if (snake[snake.length - 2].classList.contains("snake__part--rotate_down")) {
-        snake[snake.length - 1].classList.remove("snake__part--rotate_up", 
-                                                 "snake__part--rotate_down", 
-                                                 "snake__part--rotate_left");
-        snake[snake.length - 1].classList.add("snake__part--rotate_down");
-    }
-    if (snake[snake.length - 2].classList.contains("snake__part--rotate_left")) {
-        snake[snake.length - 1].classList.remove("snake__part--rotate_up", 
-                                                 "snake__part--rotate_down", 
-                                                 "snake__part--rotate_left");
-        snake[snake.length - 1].classList.add("snake__part--rotate_left");
-    }
-    if (snake[snake.length - 2].classList.contains("snake__part--rotate_right")) {
-        snake[snake.length - 1].classList.remove("snake__part--rotate_up", 
-                                                 "snake__part--rotate_down", 
-                                                 "snake__part--rotate_left");
-        snake[snake.length - 1].classList.add("snake__part--rotate_right");
-    }
-
-    snake[snake.length - 1].classList.add("snake__tail");
-    lastDirection = crntDirection;
-}
-
-function posCheckX(step) {
-    if (step > fieldSizeX - 1) {
-        return 0; 
-    } else if (step < 0) {
-        return fieldSizeX - 1; 
-    } else {
-        return step;
-    }
-}
-
-function posCheckY(step) {
-    if (step > fieldSizeY - 1) {
-        return 0; 
-    } else if (step < 0) {
-        return fieldSizeY - 1; 
-    } else {
-        return step;
-    }
-}
-
-function snakeMove(direction) {
-    if (snake.length == 0) createSnake();
-
-    let crntHeadPos = snake[0].id.split("_");
-    let posY = crntHeadPos[0];
-    let posX = crntHeadPos[1];
-    let snakeStep;
-
-    switch(direction) {
+    switch (direction) {
         case "up" : {
-            snakeStep = document.getElementById(`${posCheckY(--posY)}_${posX}`);
+            posY = posCheck(--posY, "Y");
+            //if next steep === right turn +90 deg of current rotation else if next steep === left turn - 90 deg
+            nextStep === "right" ? rotation += 90 : nextStep === "left" ? rotation -= 90 : null;
+            snakeMove(posX, posY, rotation);
             break;
         }
         case "down" : {
-            snakeStep = document.getElementById(`${posCheckY(++posY)}_${posX}`);
+            posY = posCheck(++posY, "Y");
+            nextStep === "right" ? rotation -= 90 : nextStep === "left" ? rotation += 90 : null;
+            snakeMove(posX, posY, rotation);
             break;
         }
         case "left" : {
-            snakeStep = document.getElementById(`${posY}_${posCheckX(--posX)}`);
+            posX = posCheck(--posX, "X");
+            nextStep === "down" ? rotation -= 90 : nextStep === "up" ? rotation += 90 : null;
+            snakeMove(posX, posY, rotation);
             break;
         }
         case "right" : {
-            snakeStep = document.getElementById(`${posY}_${posCheckX(++posX)}`);
+            posX = posCheck(++posX, "X");
+            nextStep === "down" ? rotation += 90 : nextStep === "up" ? rotation -= 90 : null;
+            snakeMove(posX, posY, rotation);
             break;
         }
     }
-    eatItself(snakeStep);
-    if (endGame) return;
+};
 
-    if (eatApple(snakeStep) != "nomnom" ) {
-        snake[snake.length - 1].classList.remove("snake", 
-                                                 "snake__tail", 
-                                                 "snake__part--rotate_up", 
-                                                 "snake__part--rotate_down", 
-                                                 "snake__part--rotate_left",
-                                                 "snake__part--rotate_right",
-                                                 "snake__twist--right",
-                                                 "snake__twist--left");
-        snake.pop();
-    }  
+const gameOver = () => {
+    startPauseBtn.classList.remove("paused");
+    clearInterval(autoMove);
+    snakeSpeed = null;
+    endGame = true;
+    snakeWrapper.innerHTML = null;
+    apple[2].remove();
+};
 
-    snake.unshift(snakeStep);
+const startGame = () => {
+    score = 0;
+    endGame = false;
+    snakeSpeed = 250;
+    nextStep = "right";
+    currentStep = "right";
+    createSnake();
+    createApple();
+    launchSnake();
+};
 
-    if (!endGame) createSnake()
-}
-
-createField();
-addApple()
+const launchSnake = () => {
+    autoMove = setInterval(() => {
+        snakeStep(currentStep, snakeBody.length - 1);
+        currentStep = nextStep;
+    }, snakeSpeed);
+};
