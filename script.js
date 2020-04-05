@@ -171,8 +171,10 @@ const posCheck = (step, coordinate) => {
             return step;
         } else if (step > fieldSize - 1) {
             gameOver();
+            return -1;
         } else if (step < 0) {
             gameOver();
+            return -1;
         } else {
             return step;
         }
@@ -212,25 +214,25 @@ const snakeStep = (direction, segment) => {
             posY = posCheck(--posY, "Y");
             //if next steep === right turn +90 deg of current rotation else if next steep === left turn - 90 deg
             nextStep === "right" ? rotation += 90 : nextStep === "left" ? rotation -= 90 : null;
-            snakeMove(posX, posY, rotation);
+            posY !== -1 && snakeMove(posX, posY, rotation);
             break;
         }
         case "down" : {
             posY = posCheck(++posY, "Y");
             nextStep === "right" ? rotation -= 90 : nextStep === "left" ? rotation += 90 : null;
-            snakeMove(posX, posY, rotation);
+            posY !== -1 && snakeMove(posX, posY, rotation);
             break;
         }
         case "left" : {
             posX = posCheck(--posX, "X");
             nextStep === "down" ? rotation -= 90 : nextStep === "up" ? rotation += 90 : null;
-            snakeMove(posX, posY, rotation);
+            posX !== -1 && snakeMove(posX, posY, rotation);
             break;
         }
         case "right" : {
             posX = posCheck(++posX, "X");
             nextStep === "down" ? rotation += 90 : nextStep === "up" ? rotation -= 90 : null;
-            snakeMove(posX, posY, rotation);
+            posX !== -1 && snakeMove(posX, posY, rotation);
             break;
         }
     }
@@ -239,21 +241,21 @@ const snakeStep = (direction, segment) => {
 const gameOver = () => {
     startPauseBtn.classList.remove("paused");
     endGame = true;
-    snakeWrapper.innerHTML = null;
-    apple[2].remove();
 };
 
 const launchSnake = () => {
-    snakeSpeed = 250;
     snakeStep(currentStep, snakeBody.length - 1);
     currentStep = nextStep;
 };
 
 const startGame = () => {
+    apple && apple[2].remove();
+    snakeWrapper.innerHTML = null;
     score = 0;
     endGame = false;
     nextStep = "right";
     currentStep = "right";
+    snakeSpeed = 250;
     createSnake();
     createApple();
     setTimeout(() => launchSnake(), snakeSpeed );

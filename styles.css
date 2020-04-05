@@ -103,7 +103,7 @@ section::after {
     height: 20px;
 
     background: #DB6B24;
-    transition-timing-function: linear;
+    transition-timing-function: ease-in-out;
 }
 
 .snake_head {
