@@ -140,7 +140,6 @@ section::after {
 
 .game_field .apple {
     box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.3);
-    animation-iteration-count: infinite;
     animation-timing-function: linear;
 }
 

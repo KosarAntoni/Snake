@@ -166,6 +166,7 @@ const createApple = () => {
     setTimeout(() => {
         apple[2].style.animationDuration = `${snakeSpeed * 10}ms`;
         apple[2].style.animationName = "appleBounce";
+        apple[2].style.animationIterationCount = "infinite";
     }, snakeSpeed);
 };
 
@@ -206,6 +207,7 @@ const eatApple = () => {
     snakeWrapper.insertBefore(snakeSegment[3], snakeTail);
 
     apple[2].style.animationDuration = `${snakeSpeed}ms`;
+    apple[2].style.animationIterationCount = 1;
     apple[2].style.animationName = "eatApple";
     setTimeout(() => {
         apple[2].remove();
