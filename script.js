@@ -95,6 +95,7 @@ startPauseBtn.addEventListener("click", () => {
         startPauseBtn.classList.add("paused")
     } else if (!endGame && !snakeSpeed) {
         snakeBody[snakeBody.length - 1][3].ontransitionend = () => launchSnake();
+        snakeSpeed = 250;
         launchSnake();
         startPauseBtn.classList.add("paused")
     } else {
@@ -105,16 +106,67 @@ startPauseBtn.addEventListener("click", () => {
 });
 
 const createApple = () => {
+    eatenApple = apple;
     apple = [0, 0, document.createElement("div")];
     apple[2].classList.add("apple");
+    apple[2].style.animationDuration = `${snakeSpeed}ms`;
 
-    apple[0] = Math.floor(Math.random() * fieldSizeX);
-    apple[1] = Math.floor(Math.random() * fieldSizeY);
+    //-------- apple random color
+    const randomizeColor = () => {
+        let color = Math.floor(Math.random() * 10);
+        switch (color) {
+            case 0 : {
+                apple[2].style.backgroundColor = "gold";
+                break;
+            }
+            case 1 : {
+                apple[2].style.backgroundColor = "yellowgreen";
+                break;
+            }
+            case 2 : {
+                apple[2].style.backgroundColor = "forestgreen";
+                break;
+            }
+            default: {
+                apple[2].style.backgroundColor = "crimson";
+                break;
+            }
+        }
+    };
+
+    const generateCoordinates = () => {
+        apple[0] = Math.floor(Math.random() * fieldSizeX);
+        apple[1] = Math.floor(Math.random() * fieldSizeY);
+        if (eatenApple &&
+            apple[0] === eatenApple[0] &&
+            apple[1] === eatenApple[1]) {
+            return generateCoordinates();
+        }
+        snakeBody.forEach((segment) => {
+            //if Y coordinates match check X coordinates and return if it matches
+            if (apple[0] === segment[0] &&
+                apple[1] === segment[1]) {
+                return generateCoordinates();
+            }
+        });
+    };
+
+    generateCoordinates();
+    randomizeColor(apple);
 
     apple[2].style.left = `${apple[0] * 20}px`;
     apple[2].style.top = `${apple[1] * 20}px`;
 
     gameField.append(apple[2]);
+
+    //------ANIMATE CREATION
+
+    apple[2].style.animationName = "createApple";
+
+    setTimeout(() => {
+        apple[2].style.animationDuration = `${snakeSpeed * 10}ms`;
+        apple[2].style.animationName = "appleBounce";
+    }, snakeSpeed);
 };
 
 const createSnake = () => {
@@ -153,31 +205,37 @@ const eatApple = () => {
     snakeBody.splice(1, 0, snakeSegment);
     snakeWrapper.insertBefore(snakeSegment[3], snakeTail);
 
-    apple[2].remove();
+    apple[2].style.animationDuration = `${snakeSpeed}ms`;
+    apple[2].style.animationName = "eatApple";
+    setTimeout(() => {
+        apple[2].remove();
+    }, snakeSpeed);
 };
 
 const posCheck = (step, coordinate) => {
     let snakeHead = snakeBody[snakeBody.length - 1];
+    let returnedStep = step;
     const handleCheck = (indexA, indexB, fieldSize) => {
-        snakeBody.forEach((segment) => {
+        snakeBody.forEach((segment, i) => {
             //if Y coordinates match check X coordinates and return if it matches
-            step === segment[indexA] && segment[indexB] === snakeHead[indexB] && gameOver();
+            if (i > 0 && step === segment[indexA] && segment[indexB] === snakeHead[indexB]) {
+                gameOver();
+                returnedStep = -1;
+            }
         });
         if (step === apple[indexA] && snakeHead[indexB] === apple[indexB]) {
             eatApple();
-            createApple();
+            setTimeout(() => createApple(), snakeSpeed);
             score++;
             scoreBlock.textContent = score;
-            return step;
         } else if (step > fieldSize - 1) {
             gameOver();
-            return -1;
+            returnedStep = -1;
         } else if (step < 0) {
             gameOver();
-            return -1;
-        } else {
-            return step;
+            returnedStep = -1;
         }
+        return returnedStep;
     };
     switch (coordinate) {
         case "Y" : {
@@ -258,5 +316,5 @@ const startGame = () => {
     snakeSpeed = 250;
     createSnake();
     createApple();
-    setTimeout(() => launchSnake(), snakeSpeed );
+    setTimeout(() => launchSnake(), snakeSpeed);
 };

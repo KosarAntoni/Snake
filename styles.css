@@ -1,3 +1,47 @@
+@keyframes appleBounce {
+    0% {
+        transform: scale(0.9) rotate(0);
+    }
+    25% {
+        transform: scale(1) rotate(-10deg);
+    }
+    50% {
+        transform: scale(1.1) rotate(0deg);
+    }
+    75% {
+        transform: scale(1) rotate(-10deg);
+    }
+    100% {
+        transform: scale(0.9) rotate(0);
+    }
+}
+
+@keyframes eatApple {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    30% {
+        opacity: 1;
+    }
+    70% {
+        opacity: 0;
+    }
+    100% {
+        transform: scale(0);
+        opacity: 0;
+    }
+}
+
+@keyframes createApple {
+    0% {
+        transform: scale(0);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -90,8 +134,14 @@ section::after {
     left: 9px;
 }
 
-.game_field > * {
+.snake_wrapper {
     filter: drop-shadow(3px 3px 0 rgba(0, 0, 0, 0.3));
+}
+
+.game_field .apple {
+    box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.3);
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
 }
 
 .snake {
@@ -103,7 +153,7 @@ section::after {
     height: 20px;
 
     background: #DB6B24;
-    transition-timing-function: ease-in-out;
+    transition-timing-function: linear;
 }
 
 .snake_head {
